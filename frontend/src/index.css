@@ -1,0 +1,210 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: dark;
+    --ink: #071416;
+    --phosphor: #6ee7b7;
+    --copper: #c4783a;
+    --signal: #3dd6e0;
+  }
+
+  html,
+  body,
+  #root {
+    min-height: 100%;
+  }
+
+  body {
+    @apply text-zinc-200 antialiased;
+    background:
+      radial-gradient(120% 80% at 10% -10%, rgba(61, 214, 224, 0.12), transparent 55%),
+      radial-gradient(90% 70% at 100% 0%, rgba(196, 120, 58, 0.14), transparent 50%),
+      linear-gradient(180deg, #0a1c20 0%, #071416 45%, #050e10 100%);
+    font-family: 'Source Sans 3', 'Segoe UI', sans-serif;
+    letter-spacing: -0.01em;
+  }
+}
+
+.font-display {
+  font-family: Syne, 'Source Sans 3', sans-serif;
+}
+
+.font-mono {
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+}
+
+.grain {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  opacity: 0.06;
+  mix-blend-mode: soft-light;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  z-index: 0;
+}
+
+.brand-mark {
+  width: 0.85rem;
+  height: 0.85rem;
+  border-radius: 2px;
+  background: linear-gradient(135deg, #6ee7b7, #3dd6e0);
+  box-shadow: 0 0 18px rgba(110, 231, 183, 0.45);
+}
+
+@layer components {
+  /* Flat panel used across the workspace */
+  .panel {
+    @apply rounded-lg border border-white/[0.08] bg-[#0f2428]/85;
+  }
+
+  .panel-kicker {
+    @apply text-[10px] font-semibold uppercase tracking-[0.22em] text-zinc-500;
+  }
+
+  .panel-title {
+    @apply mt-1 text-base font-semibold tracking-[-0.02em] text-zinc-100;
+  }
+
+  .chip-button {
+    @apply rounded border border-white/10 bg-white/[0.04] px-3 py-1.5 text-[11px] font-medium uppercase tracking-[0.12em] text-zinc-400 transition hover:border-white/25 hover:bg-white/[0.07] hover:text-zinc-100 disabled:cursor-not-allowed disabled:opacity-40;
+  }
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.16);
+  border-radius: 2px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.26);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.16) rgba(255, 255, 255, 0.04);
+}
+
+button,
+select,
+input[type='range'] {
+  @apply transition-colors duration-150 ease-out;
+}
+
+.native-select-safe {
+  color-scheme: light;
+}
+
+.native-select-safe option {
+  color: #111827;
+  background-color: #f4f4f5;
+}
+
+.native-select-safe option:checked {
+  color: #0f172a;
+  background-color: #e4e4e7;
+}
+
+/* Fader-style range inputs: flat track, rectangular cap */
+input[type='range'] {
+  @apply appearance-none bg-transparent cursor-pointer;
+}
+
+input[type='range']::-webkit-slider-runnable-track {
+  height: 4px;
+  border-radius: 1px;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+input[type='range']::-webkit-slider-thumb {
+  appearance: -webkit-appearance;
+  -webkit-appearance: none;
+  margin-top: -6px;
+  height: 16px;
+  width: 10px;
+  border-radius: 2px;
+  background: #d4d4d8;
+  border: 1px solid rgba(0, 0, 0, 0.4);
+}
+
+input[type='range']::-webkit-slider-thumb:hover {
+  background: #fafafa;
+}
+
+input[type='range']::-moz-range-track {
+  height: 4px;
+  border-radius: 1px;
+  border: 0;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+input[type='range']::-moz-range-thumb {
+  height: 16px;
+  width: 10px;
+  border-radius: 2px;
+  background: #d4d4d8;
+  border: 1px solid rgba(0, 0, 0, 0.4);
+}
+
+input[type='range']:disabled::-webkit-slider-thumb {
+  background: #52525b;
+}
+
+/* Compact slider variant for effect cards */
+input[type='range'].fx-slider::-webkit-slider-runnable-track {
+  height: 3px;
+}
+
+input[type='range'].fx-slider::-webkit-slider-thumb {
+  margin-top: -5px;
+  height: 13px;
+  width: 8px;
+}
+
+input[type='range'].fx-slider::-moz-range-track {
+  height: 3px;
+}
+
+input[type='range'].fx-slider::-moz-range-thumb {
+  height: 13px;
+  width: 8px;
+}
+
+@keyframes pulse-border {
+  0%,
+  100% {
+    border-color: rgba(255, 255, 255, 0.4);
+  }
+  50% {
+    border-color: rgba(255, 255, 255, 0.12);
+  }
+}
+
+.drag-active {
+  animation: pulse-border 1.2s ease-in-out infinite;
+}
+
+@keyframes rec-blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.25;
+  }
+}
+
+.rec-blink {
+  animation: rec-blink 1.1s ease-in-out infinite;
+}
