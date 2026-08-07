@@ -17,6 +17,7 @@ __pycache__
 *.pyc
 data/
 .research/
+.bare-origin/
 models/**
 !models/assets/
 !models/assets/.gitkeep
