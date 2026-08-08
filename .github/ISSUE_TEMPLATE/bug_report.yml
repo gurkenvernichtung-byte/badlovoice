@@ -1,0 +1,53 @@
+name: Bug report
+description: Something broken in BadloVoice
+title: "[Bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting. Local voice pipelines are finicky — details help a lot.
+  - type: dropdown
+    id: surface
+    attributes:
+      label: Where
+      options:
+        - Simple mode (web)
+        - Pro studio (web)
+        - Android APK
+        - Backend / WebSocket
+        - Recording / Converter
+        - Other
+    validations:
+      required: true
+  - type: input
+    id: os
+    attributes:
+      label: OS
+      placeholder: Windows 11 / macOS / Android 14 …
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: 1. Start backend… 2. Open Simple… 3. Tap Start…
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs / screenshots
+      description: Paste backend traceback or attach a screenshot (no secrets).
