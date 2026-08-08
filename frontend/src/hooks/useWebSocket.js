@@ -1,8 +1,10 @@
 import { useCallback, useRef, useState } from 'react';
 import { WS_URL, SAMPLE_RATE, CHUNK_SIZE } from '../lib/constants';
 
-const MAX_IN_FLIGHT_AUDIO_FRAMES = 1;
-const MAX_PENDING_AUDIO_FRAMES = 2;
+// Keep several frames in flight so capture does not drop most of the stream.
+// Old values (1 / 2) made speech sound unchanged or broken under load.
+const MAX_IN_FLIGHT_AUDIO_FRAMES = 6;
+const MAX_PENDING_AUDIO_FRAMES = 12;
 
 export default function useWebSocket() {
   const [status, setStatus] = useState('disconnected');

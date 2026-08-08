@@ -1,7 +1,7 @@
-# Shiftbooth
+# BadloVoice
 
 <p align="center">
-  <img src="frontend/public/favicon.svg" width="64" height="64" alt="Shiftbooth" />
+  <img src="frontend/public/favicon.svg" width="64" height="64" alt="BadloVoice" />
 </p>
 
 <p align="center">
@@ -31,7 +31,7 @@
 
 ## What it does
 
-Shiftbooth runs a local FastAPI server and a React studio UI. Your mic streams over a binary WebSocket. The server runs RVC or ONNX conversion when a model is loaded, or a full DSP chain when it is not. You hear the result live, record it, or convert a whole file offline.
+BadloVoice runs a local FastAPI server and a React studio UI. Your mic streams over a binary WebSocket. The server runs RVC or ONNX conversion when a model is loaded, or a full DSP chain when it is not. You hear the result live, record it, or convert a whole file offline.
 
 Built by studying and merging the strongest parts of [OpenVoiceChanger](https://github.com/sioaeko/OpenVoiceChanger), [w-okada/voice-changer](https://github.com/w-okada/voice-changer), [Vonovox](https://github.com/dr87/Vonovox), and [echidna](https://github.com/supermarsx/echidna). Details in [ATTRIBUTION.md](ATTRIBUTION.md) and [findings.md](findings.md).
 
@@ -50,6 +50,8 @@ Built by studying and merging the strongest parts of [OpenVoiceChanger](https://
 | Profiles | Save/load full session snapshots |
 | Offline convert | Upload wav/mp3/flac/ogg/m4a → processed WAV |
 | Recorder | Capture the converted stream and download WAV |
+| Simple mode | Phone-first Start / voice presets / pitch / record (default UI) |
+| Android | Capacitor debug APK (`frontend` → `npm run apk`) |
 
 ## Quick start
 
@@ -134,17 +136,17 @@ Browser playback + optional WAV recorder
 | Path | Role |
 |------|------|
 | `backend/` | FastAPI app, WebSocket pipeline, model/slot/preset/profile managers, DSP |
-| `frontend/` | Shiftbooth studio UI |
+| `frontend/` | BadloVoice studio UI |
 | `models/` | Your checkpoints + `assets/` (HuBERT, RMVPE, …) |
 | `data/` | Runtime presets, slots, profiles (gitignored) |
 
 ## Virtual cable routing
 
-For Discord, games, or OBS, route Shiftbooth output through a virtual cable:
+For Discord, games, or OBS, route BadloVoice output through a virtual cable:
 
 1. Install [VAC](https://software.muzychenko.net/freeware/vac470lite.zip) (preferred over VB-Cable for fewer glitches).
 2. Set mic + virtual line to **48000 Hz**, 1 channel, 16-bit when possible.
-3. Shiftbooth **input** = real mic. **Output** = Line 1 (VAC).
+3. BadloVoice **input** = real mic. **Output** = Line 1 (VAC).
 4. Windows Sound → Recording → Line 1 → **Listen to this device** if you want local monitor.
 5. In Discord/games, set microphone to Line 1.
 
@@ -152,17 +154,17 @@ Remote GPU box (w-okada style): run the backend on the GPU machine, open the UI 
 
 ## Configuration
 
-Environment prefix: `SHIFTBOOTH_`
+Environment prefix: `BadloVoice_`
 
 | Variable | Default | Notes |
 |----------|---------|--------|
-| `SHIFTBOOTH_HOST` | `0.0.0.0` | Bind address |
-| `SHIFTBOOTH_PORT` | `8000` | HTTP + WS port |
-| `SHIFTBOOTH_MODELS_DIR` | `models` | Checkpoint directory |
-| `SHIFTBOOTH_SAMPLE_RATE` | `40000` | Stream default |
-| `SHIFTBOOTH_CHUNK_SIZE` | `4096` | Overridden by latency modes in the UI |
-| `SHIFTBOOTH_HUBERT_PATH` | `models/assets/hubert_base.pt` | RVC content encoder |
-| `SHIFTBOOTH_DEFAULT_LATENCY_MODE` | `balanced` | `ultra` / `balanced` / `quality` |
+| `BadloVoice_HOST` | `0.0.0.0` | Bind address |
+| `BadloVoice_PORT` | `8000` | HTTP + WS port |
+| `BadloVoice_MODELS_DIR` | `models` | Checkpoint directory |
+| `BadloVoice_SAMPLE_RATE` | `40000` | Stream default |
+| `BadloVoice_CHUNK_SIZE` | `4096` | Overridden by latency modes in the UI |
+| `BadloVoice_HUBERT_PATH` | `models/assets/hubert_base.pt` | RVC content encoder |
+| `BadloVoice_DEFAULT_LATENCY_MODE` | `balanced` | `ultra` / `balanced` / `quality` |
 
 See `backend/config.py` for the full list.
 

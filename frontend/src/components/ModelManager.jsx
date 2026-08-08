@@ -34,7 +34,7 @@ function MetaBadge({ children, tone = 'default' }) {
   );
 }
 
-export default function ModelManager({ activeModel = null, onActiveModelChange }) {
+export default function ModelManager({ activeModel = null, onActiveModelChange, runtime = null }) {
   const [models, setModels] = useState([]);
   const [activeModelName, setActiveModelName] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -190,8 +190,8 @@ export default function ModelManager({ activeModel = null, onActiveModelChange }
     <section className="panel p-6">
       <div className="flex items-center justify-between">
         <div>
-          <p className="panel-kicker">Model Bay</p>
-          <h2 className="panel-title">Voice models</h2>
+          <p className="panel-kicker">Voice files</p>
+          <h2 className="panel-title">RVC / ONNX voice modules</h2>
         </div>
 
         <button
@@ -217,8 +217,18 @@ export default function ModelManager({ activeModel = null, onActiveModelChange }
       </div>
 
       <p className="mt-2 text-sm text-zinc-500">
-        One model runs at a time. Matching <code className="text-zinc-400">.index</code> files
-        are picked up automatically. Without a model the studio runs in pure DSP mode.
+        A <strong className="font-medium text-zinc-300">module</strong> is a trained AI voice file.
+        <br />
+        <strong className="text-zinc-300">RVC</strong> = <code className="text-zinc-400">.pth</code> models
+        (best quality, needs PyTorch). <strong className="text-zinc-300">ONNX</strong> ={' '}
+        <code className="text-zinc-400">.onnx</code> export (often easier to run).
+        Optional matching <code className="text-zinc-400">.index</code> improves quality.
+        Click <strong className="text-zinc-300">Activate</strong>, then Studio → Start with headphones.
+        {runtime?.torch?.available ? (
+          <span className="text-[#6ee7b7]"> PyTorch ready.</span>
+        ) : (
+          <span className="text-[#e09a55]"> PyTorch missing.</span>
+        )}
       </p>
 
       <div

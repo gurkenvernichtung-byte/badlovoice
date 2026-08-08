@@ -1,7 +1,8 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 
 function VuMeter({ label, level }) {
-  const percent = Math.min(Math.max(level * 100 * 3, 0), 100);
+  // Pipeline reports 0..100 meter units (dB-mapped).
+  const percent = Math.min(Math.max(Number(level) || 0, 0), 100);
   const [peak, setPeak] = useState(0);
   const peakRef = useRef(0);
 
@@ -23,7 +24,7 @@ function VuMeter({ label, level }) {
       <div className="flex items-center justify-between">
         <span className="text-[10px] font-semibold uppercase tracking-[0.16em] text-zinc-500">{label}</span>
         <span className="font-mono text-[10px] uppercase tracking-[0.1em] text-zinc-600">
-          {(level * 100).toFixed(1)}%
+          {percent.toFixed(0)}%
         </span>
       </div>
       <div className="relative h-2 bg-white/[0.06]">

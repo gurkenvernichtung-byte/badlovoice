@@ -189,7 +189,7 @@ export default function StreamExtras({
           <ol className="mt-3 list-decimal space-y-2 pl-5 text-sm text-zinc-400">
             <li>Install VAC (Virtual Audio Cable) — prefer VAC over VB-Cable for fewer glitches.</li>
             <li>Set mic + virtual line to 48000 Hz, 1 ch, 16-bit when possible.</li>
-            <li>Shiftbooth input = your real mic. Output = Line 1 (VAC).</li>
+            <li>BadloVoice input = your real mic. Output = Line 1 (VAC).</li>
             <li>In Windows Sound → Recording → Line 1 → Listen to this device (for monitoring).</li>
             <li>In Discord/games, pick Line 1 as the microphone.</li>
             <li>For remote GPU box (w-okada style), run the backend on the GPU PC and open this UI over the network.</li>

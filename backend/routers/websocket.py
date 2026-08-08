@@ -231,6 +231,12 @@ def _process_frame_sync(audio, model_manager, conn_state: dict) -> tuple:
     except RuntimeError:
         # No active model — DSP passthrough handles pitch instead.
         processed = chain.apply_pitch(processed, pitch_shift)
+    except Exception:
+        # RVC/ONNX failure must not drop the stream to silence.
+        logger.exception("Model inference failed — falling back to DSP pitch")
+        processed = chain.apply_pitch(processed, pitch_shift)
+        mode = "dsp"
+        model_ms = (time.perf_counter() - t_model) * 1000.0
 
     processed = chain.post_process(processed, effects, conn_state["formant_shift"])
 

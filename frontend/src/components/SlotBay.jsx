@@ -49,9 +49,12 @@ export default function SlotBay({ activeModel, onActiveModelChange, modelsRefres
 
   return (
     <section className="panel p-4">
-      <p className="panel-kicker">w-okada pattern</p>
+      <p className="panel-kicker">Quick slots</p>
       <h2 className="panel-title">Model slots</h2>
-      <p className="mt-1 text-sm text-zinc-500">Bind five voices for one-click hot-swap.</p>
+      <p className="mt-1 text-sm text-zinc-500">
+        Optional shortcuts: bind up to five voice files here for one-click swap.
+        (Inspired by w-okada voice-changer — you can ignore this and use the list below.)
+      </p>
 
       <div className="mt-4 grid gap-2 sm:grid-cols-5">
         {slots.map((slot) => (

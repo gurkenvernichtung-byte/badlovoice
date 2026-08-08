@@ -615,4 +615,9 @@ class EffectsChain:
                 except Exception:
                     logger.exception("Effect %r failed — skipping", key)
 
+        # Makeup gain so wet output is not quieter than the mic (common "no change" complaint).
+        in_rms = float(np.sqrt(np.mean(audio.astype(np.float64) ** 2)) + 1e-9)
+        out_rms = float(np.sqrt(np.mean(y.astype(np.float64) ** 2)) + 1e-9)
+        if out_rms > 0 and in_rms / out_rms > 1.05:
+            y = y * np.float32(min(in_rms / out_rms, 4.0))
         return np.clip(y, -1.0, 1.0).astype(np.float32)

@@ -85,8 +85,8 @@ export default function PresetBar({ activePresetId, onApplyPreset, getCurrentSet
     <section id="presets" className="panel scroll-mt-20 p-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <p className="panel-kicker">Presets</p>
-          <h2 className="panel-title">One-click voices</h2>
+          <p className="panel-kicker">Extra presets</p>
+          <h2 className="panel-title">FX & saved</h2>
         </div>
 
         <div className="flex items-center gap-2">

@@ -13,23 +13,30 @@ import Recorder from './components/Recorder';
 import FileConverter from './components/FileConverter';
 import SlotBay from './components/SlotBay';
 import StreamExtras from './components/StreamExtras';
+import BackgroundBlocker from './components/BackgroundBlocker';
+import VoiceProfiles from './components/VoiceProfiles';
+import EngineModes from './components/EngineModes';
+import SimpleHome from './components/SimpleHome';
 import useWebSocket from './hooks/useWebSocket';
 import useAudioPipeline from './hooks/useAudioPipeline';
 import useAudioDevices from './hooks/useAudioDevices';
 import { getActiveModel, fetchConfig } from './lib/api';
 import { applyConfig } from './lib/constants';
 import { defaultEffects, effectsFromPreset } from './lib/effects';
+import { profileToEffects, profileToVoicePartial } from './lib/voiceProfiles';
 
 const GLOBAL_SETTINGS_STORAGE_KEY = 'shiftbooth_global_settings';
-const VOICE_STORAGE_KEY = 'shiftbooth_voice_v3';
-const EFFECTS_STORAGE_KEY = 'shiftbooth_effects_v3';
-const EXTRAS_STORAGE_KEY = 'shiftbooth_extras_v3';
+const VOICE_STORAGE_KEY = 'shiftbooth_voice_v11';
+const EFFECTS_STORAGE_KEY = 'shiftbooth_effects_v10';
+const EXTRAS_STORAGE_KEY = 'shiftbooth_extras_v10';
+const UI_MODE_STORAGE_KEY = 'shiftbooth_ui_mode';
 
 const DEFAULT_VOICE = {
-  pitch: 0,
-  formant: 0,
+  pitch: 7,
+  formant: 3.5,
   f0Method: 'pm',
-  indexRate: 0.75,
+  // 0 = faster realtime RVC on CPU (index search is too slow live).
+  indexRate: 0,
   rmsMixRate: 0.25,
   protect: 0.33,
 };
@@ -122,7 +129,12 @@ function loadInitialVoice() {
 
 function loadInitialEffects() {
   const stored = readStored(EFFECTS_STORAGE_KEY);
-  return stored ? effectsFromPreset(stored) : defaultEffects();
+  if (stored) return effectsFromPreset(stored);
+  const fx = defaultEffects();
+  fx.robot = { enabled: false, freq: 90 };
+  fx.gate = { enabled: false, threshold: -56 };
+  fx.eq = { enabled: true, low: -1, high: 3 };
+  return fx;
 }
 
 export default function App() {
@@ -131,6 +143,13 @@ export default function App() {
   const devices = useAudioDevices();
 
   // Deep links: ?tab=models|converter selects a tab, ?settings opens the modal.
+  const [uiMode, setUiMode] = useState(() => {
+    const param = new URLSearchParams(window.location.search).get('tab');
+    if (param === 'models' || param === 'converter') return 'pro';
+    const stored = readStored(UI_MODE_STORAGE_KEY);
+    if (stored === 'pro' || stored === 'simple') return stored;
+    return 'simple';
+  });
   const [tab, setTab] = useState(() => {
     const param = new URLSearchParams(window.location.search).get('tab');
     return ['studio', 'models', 'converter'].includes(param) ? param : 'studio';
@@ -145,14 +164,16 @@ export default function App() {
   const [activePresetId, setActivePresetId] = useState(null);
   const [latencyHistory, setLatencyHistory] = useState([]);
   const [extras, setExtras] = useState(() => {
-    const stored = readStored(EXTRAS_STORAGE_KEY);
+    const stored = readStored(EXTRAS_STORAGE_KEY) || {};
     return {
-      vadEnabled: false,
-      vadThresholdDb: -45,
       latencyMode: 'balanced',
       crossfadeMs: 8,
       extraBufferChunks: 1,
-      ...(stored || {}),
+      ...stored,
+      // Gate OFF by default — it was muting mics and sounded like "nothing works".
+      blockBackground: stored.blockBackground ?? false,
+      vadEnabled: stored.vadEnabled ?? false,
+      vadThresholdDb: stored.vadThresholdDb ?? -56,
     };
   });
 
@@ -171,15 +192,25 @@ export default function App() {
   // --- Settings payload sync -------------------------------------------------
 
   const settingsPayloadRef = useRef(null);
+  const effectsWithGate = {
+    ...effects,
+    gate: {
+      enabled: Boolean(extras.blockBackground),
+      threshold: Number(extras.vadThresholdDb) || -56,
+    },
+  };
+
+  // With an RVC/ONNX module, let the model own the voice — don't stack DSP pitch/formant.
+  const modelActive = Boolean(activeModel);
   settingsPayloadRef.current = {
-    pitch_shift: voice.pitch,
-    formant_shift: voice.formant,
+    pitch_shift: modelActive ? 0 : voice.pitch,
+    formant_shift: modelActive ? 0 : voice.formant,
     f0_method: voice.f0Method,
     index_rate: voice.indexRate,
     rms_mix_rate: voice.rmsMixRate,
     protect: voice.protect,
-    effects,
-    vad_enabled: extras.vadEnabled,
+    effects: effectsWithGate,
+    vad_enabled: Boolean(extras.blockBackground),
     vad_threshold_db: extras.vadThresholdDb,
     latency_mode: extras.latencyMode,
     crossfade_ms: extras.crossfadeMs,
@@ -192,6 +223,21 @@ export default function App() {
     writeStored(EFFECTS_STORAGE_KEY, effects);
     writeStored(EXTRAS_STORAGE_KEY, extras);
 
+    // DSP: loud local pitch. RVC: duck local so you can hear the model return.
+    pipeline.setListenMode?.(modelActive ? 'rvc' : 'local');
+    pipeline.setMonitorParams?.({
+      pitch: modelActive ? 0 : (Number(voice.pitch) || 7),
+      // Keep robot mild — high wet made recordings unintelligible.
+      robot: !modelActive && effects?.robot?.enabled ? 0.4 : 0,
+      robotFreq: Number(effects?.robot?.freq) || 90,
+      enabled: !modelActive,
+    });
+    pipeline.setGateParams?.({
+      enabled: Boolean(extras.blockBackground),
+      thresholdDb: Number(extras.vadThresholdDb) || -56,
+      holdMs: 280,
+    });
+
     if (wsStatus !== 'connected') return undefined;
     if (settingsDebounceRef.current) clearTimeout(settingsDebounceRef.current);
     settingsDebounceRef.current = setTimeout(() => {
@@ -200,7 +246,8 @@ export default function App() {
     return () => {
       if (settingsDebounceRef.current) clearTimeout(settingsDebounceRef.current);
     };
-  }, [voice, effects, extras, wsStatus, sendSettings]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [voice, effects, extras, wsStatus, sendSettings, modelActive]);
 
   // Push the full current settings as soon as a connection opens.
   useEffect(() => {
@@ -306,6 +353,12 @@ export default function App() {
     }));
     setEffects(effectsFromPreset(settings.effects));
     setActivePresetId(preset.id);
+  }, []);
+
+  const applyVoiceProfile = useCallback((profile) => {
+    setVoice((prev) => ({ ...prev, ...profileToVoicePartial(profile) }));
+    setEffects((prev) => profileToEffects(profile, prev));
+    setActivePresetId(profile.id);
   }, []);
 
   const getCurrentSettings = useCallback(() => ({
@@ -417,10 +470,17 @@ export default function App() {
 
   // --- Render ----------------------------------------------------------------
 
+  const handleUiModeChange = useCallback((mode) => {
+    const next = mode === 'pro' ? 'pro' : 'simple';
+    setUiMode(next);
+    writeStored(UI_MODE_STORAGE_KEY, next);
+    if (next === 'simple') setTab('studio');
+  }, []);
+
   const headerActions = (
     <button
       onClick={() => setIsSettingsOpen(true)}
-      className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-white/[0.08] bg-white/[0.03] text-zinc-400 transition hover:border-white/25 hover:bg-white/[0.06] hover:text-zinc-200"
+      className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/[0.04] text-[color:var(--muted)] transition hover:border-white/20 hover:text-[color:var(--ink-text)]"
       title="Session settings"
       aria-label="Open settings"
     >
@@ -438,15 +498,57 @@ export default function App() {
     </button>
   );
 
+  const isSimple = uiMode !== 'pro';
+
   return (
     <Layout
       tab={tab}
       onTabChange={setTab}
+      uiMode={isSimple ? 'simple' : 'pro'}
+      onUiModeChange={handleUiModeChange}
       statusSlot={<StatusIndicator wsStatus={wsStatus} activeModel={activeModel} mode={serverStats.mode} />}
       headerActions={headerActions}
     >
-      {tab === 'studio' && (
+      {isSimple && (
+        <SimpleHome
+          devices={devices}
+          pipeline={pipeline}
+          voice={voice}
+          onVoiceChange={handleVoiceChange}
+          activePresetId={activePresetId}
+          onSelectProfile={applyVoiceProfile}
+        />
+      )}
+
+      {!isSimple && tab === 'studio' && (
         <div className="space-y-5 animate-fade-in-up">
+          <EngineModes
+            hasModel={Boolean(activeModel)}
+            torchOk={Boolean(runtimeConfig.runtime?.torch?.available)}
+            onnxOk={Boolean(runtimeConfig.runtime?.onnx?.available)}
+          />
+
+          <BackgroundBlocker
+            enabled={Boolean(extras.blockBackground)}
+            thresholdDb={Number(extras.vadThresholdDb) || -56}
+            gateOpen={pipeline.gateOpen}
+            levelDb={pipeline.gateLevelDb}
+            onChange={(partial) => {
+              setExtras((prev) => ({
+                ...prev,
+                blockBackground: partial.enabled ?? prev.blockBackground,
+                vadThresholdDb: partial.thresholdDb ?? prev.vadThresholdDb,
+                vadEnabled: partial.enabled ?? prev.blockBackground,
+              }));
+            }}
+          />
+
+          <VoiceProfiles
+            activeId={activePresetId}
+            onSelect={applyVoiceProfile}
+            hasModel={Boolean(activeModel)}
+          />
+
           <div className="grid grid-cols-1 gap-5 xl:grid-cols-[minmax(0,1fr)_380px]">
             <div className="space-y-5">
               <Visualizer getAnalysers={pipeline.getAnalysers} isRunning={pipeline.isRunning} />
@@ -456,7 +558,14 @@ export default function App() {
                 wsStatus={wsStatus}
                 activeModel={activeModel}
               />
-              <Recorder pipeline={pipeline} />
+              <Recorder
+                pipeline={pipeline}
+                onEnsureStarted={async () => {
+                  if (pipeline.isRunning) return;
+                  await devices.refresh?.();
+                  await pipeline.start();
+                }}
+              />
             </div>
 
             <div className="space-y-5">
@@ -496,21 +605,25 @@ export default function App() {
           />
 
           <EffectsRack
-            effects={effects}
+            effects={effectsWithGate}
             formantShift={voice.formant}
             onEffectsChange={handleEffectsChange}
           />
         </div>
       )}
 
-      {tab === 'models' && (
+      {!isSimple && tab === 'models' && (
         <div className="mx-auto max-w-4xl space-y-5 animate-fade-in-up">
           <SlotBay activeModel={activeModel} onActiveModelChange={setActiveModel} />
-          <ModelManager activeModel={activeModel} onActiveModelChange={setActiveModel} />
+          <ModelManager
+            activeModel={activeModel}
+            onActiveModelChange={setActiveModel}
+            runtime={runtimeConfig.runtime}
+          />
         </div>
       )}
 
-      {tab === 'converter' && (
+      {!isSimple && tab === 'converter' && (
         <div className="mx-auto max-w-3xl animate-fade-in-up">
           <FileConverter
             voice={voice}

@@ -73,6 +73,13 @@ export default function VoiceLab({ voice, onChange, hasModel, isRunning }) {
         <div>
           <p className="panel-kicker">Voice Lab</p>
           <h2 className="panel-title">Pitch & timbre</h2>
+          {voice.pitch === 0 && voice.formant === 0 ? (
+            <p className="mt-1 text-xs text-[#e09a55]">Pitch/formant at 0 = no change. Drag pitch up/down.</p>
+          ) : (
+            <p className="mt-1 text-xs text-[#6ee7b7]">
+              Live shift: pitch {voice.pitch > 0 ? '+' : ''}{voice.pitch} · formant {voice.formant > 0 ? '+' : ''}{voice.formant}
+            </p>
+          )}
         </div>
         <span className={`rounded border px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] ${
           isRunning

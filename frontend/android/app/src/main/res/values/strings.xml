@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">BadloVoice</string>
+    <string name="title_activity_main">BadloVoice</string>
+    <string name="package_name">com.badlovoice.app</string>
+    <string name="custom_url_scheme">com.badlovoice.app</string>
+</resources>

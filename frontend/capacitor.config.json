@@ -1,0 +1,17 @@
+{
+  "appId": "com.badlovoice.app",
+  "appName": "BadloVoice",
+  "webDir": "dist",
+  "server": {
+    "androidScheme": "https"
+  },
+  "android": {
+    "allowMixedContent": true
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchAutoHide": true,
+      "backgroundColor": "#121018"
+    }
+  }
+}

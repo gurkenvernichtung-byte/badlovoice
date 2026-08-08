@@ -1,7 +1,31 @@
 // Minimal 16-bit PCM WAV encoder for recorded Float32 audio.
 
+/** Peak-normalize + soft-limit so loud takes stay clear (no brick-wall clip). */
+export function prepareRecordChunks(float32Chunks, targetPeak = 0.86) {
+  let peak = 0;
+  for (const chunk of float32Chunks) {
+    for (let i = 0; i < chunk.length; i++) {
+      const a = Math.abs(chunk[i]);
+      if (a > peak) peak = a;
+    }
+  }
+  if (peak < 1e-6) return float32Chunks;
+
+  // Boost quiet takes; pull down clipped / overdriven takes.
+  const gain = Math.min(4, targetPeak / peak);
+  return float32Chunks.map((chunk) => {
+    const out = new Float32Array(chunk.length);
+    for (let i = 0; i < chunk.length; i++) {
+      const y = chunk[i] * gain;
+      out[i] = Math.tanh(y * 1.05);
+    }
+    return out;
+  });
+}
+
 export function encodeWav(float32Chunks, sampleRate) {
-  const totalSamples = float32Chunks.reduce((sum, chunk) => sum + chunk.length, 0);
+  const prepared = prepareRecordChunks(float32Chunks);
+  const totalSamples = prepared.reduce((sum, chunk) => sum + chunk.length, 0);
   const dataSize = totalSamples * 2;
   const buffer = new ArrayBuffer(44 + dataSize);
   const view = new DataView(buffer);
@@ -27,7 +51,7 @@ export function encodeWav(float32Chunks, sampleRate) {
   view.setUint32(40, dataSize, true);
 
   let offset = 44;
-  for (const chunk of float32Chunks) {
+  for (const chunk of prepared) {
     for (let i = 0; i < chunk.length; i++) {
       const s = Math.max(-1, Math.min(1, chunk[i]));
       view.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7fff, true);

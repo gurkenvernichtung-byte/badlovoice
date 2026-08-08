@@ -11,7 +11,7 @@ export default {
         },
       },
       animation: {
-        'fade-in-up': 'fade-in-up 0.35s ease-out both',
+        'fade-in-up': 'fade-in-up 0.28s cubic-bezier(0.16, 1, 0.3, 1) both',
       },
     },
   },

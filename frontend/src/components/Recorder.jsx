@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 function formatDuration(seconds) {
-  const total = Math.floor(seconds);
+  const total = Math.max(0, Math.floor(seconds));
   const m = Math.floor(total / 60);
   const s = total % 60;
   return `${m}:${String(s).padStart(2, '0')}`;
@@ -12,9 +12,103 @@ function formatSize(bytes) {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
-// Records the converted output stream and offers a WAV download.
-export default function Recorder({ pipeline }) {
+/**
+ * Records the mixed output (local pitch monitor + server return).
+ * Requires Start first — Record alone does nothing on purpose.
+ */
+export default function Recorder({ pipeline, onEnsureStarted, compact = false }) {
   const { isRunning, isRecording, recordSeconds, lastRecording } = pipeline;
+  const [hint, setHint] = useState(null);
+
+  const handleRecord = async () => {
+    setHint(null);
+    try {
+      if (!isRunning) {
+        if (!onEnsureStarted) {
+          setHint('Tap Start first, then Record.');
+          return;
+        }
+        setHint('Starting…');
+        await onEnsureStarted();
+      }
+      pipeline.startRecording();
+      setHint('Recording — talk, then tap Stop.');
+    } catch (err) {
+      setHint(err.message || 'Could not start recording');
+    }
+  };
+
+  const handleStop = () => {
+    const result = pipeline.stopRecording();
+    if (result && typeof result.then === 'function') {
+      result.then((rec) => {
+        setHint(rec ? 'Saved — download below.' : 'Empty take — talk longer, then try again.');
+      });
+      return;
+    }
+    setHint(result ? 'Saved — download below.' : 'Empty take — talk longer, then try again.');
+  };
+
+  const downloadRow = lastRecording ? (
+    <div
+      className={`${compact ? 'mt-3' : 'mt-4'} rounded-2xl border border-white/[0.08] bg-black/25 p-3.5`}
+    >
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <p className="text-xs text-[color:var(--muted)]">
+          Last take · {formatDuration(lastRecording.seconds)} · {formatSize(lastRecording.size)}
+        </p>
+        <div className="flex items-center gap-2">
+          <a
+            href={lastRecording.url}
+            download={`badlovoice-${Date.now()}.wav`}
+            className="chip-button !normal-case min-h-10"
+          >
+            Download WAV
+          </a>
+          <button
+            type="button"
+            onClick={() => pipeline.discardRecording()}
+            className="chip-button min-h-10 !px-2.5"
+            aria-label="Discard recording"
+          >
+            Clear
+          </button>
+        </div>
+      </div>
+      <audio controls src={lastRecording.url} className="mt-3 h-9 w-full" />
+    </div>
+  ) : null;
+
+  if (compact) {
+    return (
+      <section className="panel p-4">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <p className="text-sm font-semibold text-[color:var(--ink-text)]">Record</p>
+          {isRecording ? (
+            <div className="flex items-center gap-3">
+              <span className="flex items-center gap-2 font-mono text-sm tabular-nums text-[color:var(--danger-soft)]">
+                <span className="rec-blink inline-block h-2.5 w-2.5 rounded-full bg-[color:var(--danger)]" />
+                {formatDuration(recordSeconds)}
+              </span>
+              <button type="button" onClick={handleStop} className="btn-secondary-danger">
+                Stop
+              </button>
+            </div>
+          ) : (
+            <button type="button" onClick={handleRecord} className="btn-record">
+              {isRunning ? 'Record' : 'Start + Record'}
+            </button>
+          )}
+        </div>
+        {hint ? (
+          <p className="mt-2 text-xs text-[color:var(--accent-soft)]" role="status">
+            {hint}
+          </p>
+        ) : null}
+        {downloadRow}
+      </section>
+    );
+  }
 
   return (
     <section className="panel p-5">
@@ -26,57 +120,35 @@ export default function Recorder({ pipeline }) {
 
         {isRecording ? (
           <div className="flex items-center gap-3">
-            <span className="flex items-center gap-2 font-mono text-sm tabular-nums text-rose-200">
-              <span className="rec-blink inline-block h-2.5 w-2.5 rounded-full bg-rose-400" />
+            <span className="flex items-center gap-2 font-mono text-sm tabular-nums text-[color:var(--danger-soft)]">
+              <span className="rec-blink inline-block h-2.5 w-2.5 rounded-full bg-[color:var(--danger)]" />
               {formatDuration(recordSeconds)}
             </span>
-            <button
-              onClick={() => pipeline.stopRecording()}
-              className="rounded border border-rose-400/40 bg-rose-500/15 px-4 py-2 text-[11px] font-bold uppercase tracking-[0.14em] text-rose-200 transition hover:bg-rose-500/25"
-            >
-              ■ Stop
+            <button type="button" onClick={handleStop} className="btn-secondary-danger">
+              Stop
             </button>
           </div>
         ) : (
-          <button
-            onClick={() => pipeline.startRecording()}
-            disabled={!isRunning}
-            className="rounded border border-rose-400/30 bg-rose-500/10 px-4 py-2 text-[11px] font-bold uppercase tracking-[0.14em] text-rose-200 transition hover:bg-rose-500/20 disabled:cursor-not-allowed disabled:border-white/10 disabled:bg-white/[0.03] disabled:text-zinc-600"
-            title={isRunning ? 'Record the converted output' : 'Start routing first'}
-          >
-            ● Record
+          <button type="button" onClick={handleRecord} className="btn-record">
+            {isRunning ? 'Record' : 'Start + Record'}
           </button>
         )}
       </div>
 
-      {lastRecording ? (
-        <div className="mt-4 rounded-md border border-white/[0.08] bg-black/25 p-3.5">
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-zinc-500">
-              Last take · {formatDuration(lastRecording.seconds)} · {formatSize(lastRecording.size)}
-            </p>
-            <div className="flex items-center gap-2">
-              <a
-                href={lastRecording.url}
-                download={`voice-take-${Date.now()}.wav`}
-                className="chip-button !normal-case"
-              >
-                ↓ Download WAV
-              </a>
-              <button onClick={() => pipeline.discardRecording()} className="chip-button !px-2.5">
-                ✕
-              </button>
-            </div>
-          </div>
-          <audio controls src={lastRecording.url} className="mt-3 h-9 w-full" />
-        </div>
-      ) : (
-        <p className="mt-3 text-xs text-zinc-600">
-          {isRunning
-            ? 'Capture the converted voice as a 16-bit WAV file.'
-            : 'Start the voice changer, then record your converted voice.'}
+      <ol className="mt-3 list-decimal space-y-1 pl-4 text-xs text-[color:var(--muted)]">
+        <li>Wear headphones</li>
+        <li>
+          Press <strong className="text-[color:var(--ink-text)]">Start</strong> (or Start + Record)
+        </li>
+        <li>Talk, then Stop — download WAV here</li>
+      </ol>
+
+      {hint ? (
+        <p className="mt-2 text-xs text-[color:var(--accent-soft)]" role="status">
+          {hint}
         </p>
-      )}
+      ) : null}
+      {downloadRow}
     </section>
   );
 }
