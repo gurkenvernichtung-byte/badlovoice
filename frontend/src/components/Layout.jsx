@@ -89,6 +89,10 @@ export default function Layout({
         <footer className="shell-footer border-t border-white/[0.06] pt-3">
           <p className="mx-auto w-full max-w-lg text-center text-xs text-[color:var(--muted)] sm:max-w-[1560px] sm:text-left">
             {isPro ? 'BadloVoice Studio' : 'BadloVoice'}
+            <span className="mx-1.5 text-white/20" aria-hidden="true">
+              ·
+            </span>
+            Built by Abuzar
           </p>
         </footer>
       </div>
