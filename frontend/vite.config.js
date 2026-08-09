@@ -3,8 +3,8 @@ import react from '@vitejs/plugin-react';
 
 export default defineConfig({
   plugins: [react()],
-  // Relative paths so the Capacitor Android WebView can load assets.
-  base: './',
+  // Relative for Capacitor APK; absolute root for Vercel HTTPS hosting.
+  base: process.env.VERCEL ? '/' : './',
   server: {
     host: '127.0.0.1',
     port: 5173,
