@@ -7,14 +7,14 @@ import Recorder from './Recorder';
 
 function LevelBar({ label, value, tone = 'signal' }) {
   const pct = Math.min(100, Math.max(0, Number(value) || 0));
-  const fill = tone === 'out' ? 'bg-[color:var(--accent)]' : 'bg-[#7eb6ff]';
+  const fill = tone === 'out' ? 'bg-[color:var(--accent)]' : 'bg-[color:var(--mic)]';
   return (
     <div className="min-w-0 flex-1">
       <div className="mb-1.5 flex items-center justify-between text-xs text-[color:var(--muted)]">
         <span>{label}</span>
         <span className="tabular-nums">{Math.round(pct)}%</span>
       </div>
-      <div className="h-2 overflow-hidden rounded-full bg-black/35">
+      <div className="level-track">
         <div className={`level-fill ${fill}`} style={{ width: `${pct}%` }} />
       </div>
     </div>
@@ -27,7 +27,7 @@ function VoiceChip({ profile, selected, onSelect }) {
       type="button"
       onClick={() => onSelect(profile)}
       aria-pressed={selected}
-      className={`voice-chip ${selected ? 'voice-chip-on' : 'hover:border-white/20'}`}
+      className={`voice-chip ${selected ? 'voice-chip-on' : ''}`}
     >
       <span className="flex items-start justify-between gap-2">
         <span className="voice-chip-name block text-[15px] font-semibold tracking-tight">
@@ -35,7 +35,7 @@ function VoiceChip({ profile, selected, onSelect }) {
         </span>
         {selected ? (
           <span
-            className="mt-0.5 inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-[color:var(--accent)] text-[10px] font-bold text-[#1a0f0a]"
+            className="mt-0.5 inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-[color:var(--accent)] text-[10px] font-bold text-[#1f120c]"
             aria-hidden="true"
           >
             ✓
@@ -114,15 +114,15 @@ export default function SimpleHome({
     <div className="space-y-5 animate-fade-in-up pb-10">
       <div>
         <div
-          className={`inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-sm font-semibold ${
-            pipeline.isRunning
-              ? 'bg-[color:var(--accent)]/15 text-[color:var(--accent-soft)]'
-              : 'bg-white/[0.05] text-[color:var(--muted)]'
+          className={`status-pill ${
+            pipeline.isRunning ? 'status-pill-live' : 'status-pill-off'
           }`}
         >
           <span
             className={`h-2 w-2 rounded-full ${
-              pipeline.isRunning ? 'bg-[color:var(--accent)] rec-blink' : 'bg-white/25'
+              pipeline.isRunning
+                ? 'bg-[color:var(--accent)] rec-blink'
+                : 'bg-[color:var(--ink-text)]/25'
             }`}
           />
           {pipeline.isRunning ? 'Live' : 'Off'}
@@ -148,13 +148,19 @@ export default function SimpleHome({
       )}
 
       {error && (
-        <div className="rounded-2xl border border-rose-400/25 bg-rose-500/10 p-3" role="alert">
-          <p className="text-sm text-rose-100">{error}</p>
+        <div
+          className="rounded-2xl border border-[color:var(--danger)]/30 bg-[color:var(--danger)]/10 p-3"
+          role="alert"
+        >
+          <p className="text-sm text-[color:var(--danger-soft)]">{error}</p>
         </div>
       )}
       {devices.error && !error && (
-        <div className="rounded-2xl border border-amber-300/25 bg-amber-400/10 p-3" role="status">
-          <p className="text-sm text-amber-50">{devices.error}</p>
+        <div
+          className="rounded-2xl border border-amber-700/25 bg-amber-500/10 p-3"
+          role="status"
+        >
+          <p className="text-sm text-amber-950">{devices.error}</p>
         </div>
       )}
 
@@ -181,7 +187,7 @@ export default function SimpleHome({
           type="button"
           onClick={() => setShowMore((v) => !v)}
           aria-expanded={showMore}
-          className="mt-3 min-h-11 w-full rounded-2xl border border-white/10 bg-white/[0.03] px-3 text-sm font-medium text-[color:var(--muted)] transition hover:border-white/20 hover:text-[color:var(--ink-text)]"
+          className="mt-3 min-h-11 w-full rounded-2xl border border-[color:var(--line)] bg-[color:var(--surface)] px-3 text-sm font-medium text-[color:var(--muted)] transition hover:border-[color:var(--ink-text)]/20 hover:text-[color:var(--ink-text)]"
         >
           {showMore ? 'Fewer voices' : 'More voices'}
         </button>
@@ -247,7 +253,7 @@ export default function SimpleHome({
           <span className="text-[color:var(--muted)]">{showDevices ? 'Hide' : 'Show'}</span>
         </button>
         {showDevices && (
-          <div className="space-y-3 border-t border-white/[0.06] px-4 pb-4 pt-3">
+          <div className="space-y-3 border-t border-[color:var(--line)] px-4 pb-4 pt-3">
             <div>
               <label className="block text-xs text-[color:var(--muted)]" htmlFor="simple-mic">
                 Microphone
@@ -257,7 +263,7 @@ export default function SimpleHome({
                 value={selectedInput}
                 onChange={(e) => setSelectedInput(e.target.value)}
                 disabled={pipeline.isRunning}
-                className="native-select-safe mt-1.5 min-h-11 w-full rounded-xl border border-white/[0.08] bg-black/25 px-3 text-sm outline-none focus-visible:border-[color:var(--accent)]/50 disabled:opacity-50"
+                className="native-select-safe mt-1.5 min-h-11 w-full rounded-xl border border-[color:var(--line)] bg-[color:var(--surface)] px-3 text-sm outline-none focus-visible:border-[color:var(--accent)]/50 disabled:opacity-50"
               >
                 <option value="">Default microphone</option>
                 {devices.inputDevices.map((device) => (
@@ -276,7 +282,7 @@ export default function SimpleHome({
                 value={selectedOutput}
                 onChange={(e) => setSelectedOutput(e.target.value)}
                 disabled={pipeline.isRunning}
-                className="native-select-safe mt-1.5 min-h-11 w-full rounded-xl border border-white/[0.08] bg-black/25 px-3 text-sm outline-none focus-visible:border-[color:var(--accent)]/50 disabled:opacity-50"
+                className="native-select-safe mt-1.5 min-h-11 w-full rounded-xl border border-[color:var(--line)] bg-[color:var(--surface)] px-3 text-sm outline-none focus-visible:border-[color:var(--accent)]/50 disabled:opacity-50"
               >
                 <option value="">Default speaker</option>
                 {devices.outputDevices.map((device) => (

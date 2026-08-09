@@ -51,7 +51,7 @@ export default function SlotBay({ activeModel, onActiveModelChange, modelsRefres
     <section className="panel p-4">
       <p className="panel-kicker">Quick slots</p>
       <h2 className="panel-title">Model slots</h2>
-      <p className="mt-1 text-sm text-zinc-500">
+      <p className="mt-1 text-sm text-[color:var(--muted)]">
         Optional shortcuts: bind up to five voice files here for one-click swap.
         (Inspired by w-okada voice-changer — you can ignore this and use the list below.)
       </p>
@@ -61,11 +61,11 @@ export default function SlotBay({ activeModel, onActiveModelChange, modelsRefres
           <div
             key={slot.index}
             className={`rounded border p-2 ${
-              slot.active ? 'border-[#c4783a] bg-[#c4783a]/10' : 'border-white/10 bg-black/20'
+              slot.active ? 'border-[#c4783a] bg-[#c4783a]/10' : 'border-[color:var(--line)] bg-[color:var(--surface-2)]/60'
             }`}
           >
             <div className="flex items-center justify-between gap-1">
-              <span className="font-mono text-[10px] uppercase tracking-wider text-zinc-500">
+              <span className="font-mono text-[10px] uppercase tracking-wider text-[color:var(--muted)]">
                 {slot.label || `Slot ${slot.index + 1}`}
               </span>
               {slot.active ? (
@@ -75,7 +75,7 @@ export default function SlotBay({ activeModel, onActiveModelChange, modelsRefres
               ) : null}
             </div>
             <select
-              className="native-select-safe mt-2 w-full rounded border border-white/10 bg-[#0f2428] px-1 py-1 text-xs text-zinc-200"
+              className="native-select-safe mt-2 w-full rounded border border-[color:var(--line)] bg-[color:var(--surface-2)] px-1 py-1 text-xs text-[color:var(--ink-text)]"
               value={slot.name || ''}
               disabled={busy != null}
               onChange={(e) => onBind(slot.index, e.target.value)}

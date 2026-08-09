@@ -24,7 +24,7 @@ function getModelType(name) {
 
 function MetaBadge({ children, tone = 'default' }) {
   const tones = {
-    default: 'border-white/10 bg-white/[0.03] text-zinc-500',
+    default: 'border-[color:var(--line)] bg-[color:var(--surface)] text-[color:var(--muted)]',
     emerald: 'border-emerald-300/30 bg-emerald-400/[0.07] text-emerald-200',
   };
   return (
@@ -197,7 +197,7 @@ export default function ModelManager({ activeModel = null, onActiveModelChange, 
         <button
           onClick={loadModels}
           disabled={loading}
-          className="rounded border border-white/10 bg-white/[0.03] p-2 text-zinc-500 transition hover:border-white/25 hover:bg-white/[0.06] hover:text-zinc-200"
+          className="rounded border border-[color:var(--line)] bg-[color:var(--surface)] p-2 text-[color:var(--muted)] transition hover:border-[color:var(--ink-text)]/25 hover:bg-[color:var(--surface)] hover:text-[color:var(--ink-text)]"
           title="Refresh models"
         >
           <svg
@@ -216,14 +216,14 @@ export default function ModelManager({ activeModel = null, onActiveModelChange, 
         </button>
       </div>
 
-      <p className="mt-2 text-sm text-zinc-500">
-        A <strong className="font-medium text-zinc-300">module</strong> is a trained AI voice file.
+      <p className="mt-2 text-sm text-[color:var(--muted)]">
+        A <strong className="font-medium text-[color:var(--ink-text)]">module</strong> is a trained AI voice file.
         <br />
-        <strong className="text-zinc-300">RVC</strong> = <code className="text-zinc-400">.pth</code> models
-        (best quality, needs PyTorch). <strong className="text-zinc-300">ONNX</strong> ={' '}
-        <code className="text-zinc-400">.onnx</code> export (often easier to run).
-        Optional matching <code className="text-zinc-400">.index</code> improves quality.
-        Click <strong className="text-zinc-300">Activate</strong>, then Studio → Start with headphones.
+        <strong className="text-[color:var(--ink-text)]">RVC</strong> = <code className="text-[color:var(--muted)]">.pth</code> models
+        (best quality, needs PyTorch). <strong className="text-[color:var(--ink-text)]">ONNX</strong> ={' '}
+        <code className="text-[color:var(--muted)]">.onnx</code> export (often easier to run).
+        Optional matching <code className="text-[color:var(--muted)]">.index</code> improves quality.
+        Click <strong className="text-[color:var(--ink-text)]">Activate</strong>, then Studio → Start with headphones.
         {runtime?.torch?.available ? (
           <span className="text-[#6ee7b7]"> PyTorch ready.</span>
         ) : (
@@ -244,8 +244,8 @@ export default function ModelManager({ activeModel = null, onActiveModelChange, 
         onClick={() => fileInputRef.current?.click()}
         className={`relative mt-5 cursor-pointer rounded-md border border-dashed p-7 text-center transition-all duration-200 ${
           dragActive
-            ? 'border-white/40 bg-white/[0.05] drag-active'
-            : 'border-white/[0.12] bg-white/[0.02] hover:border-white/25 hover:bg-white/[0.04]'
+            ? 'border-[color:var(--ink-text)]/35 bg-[color:var(--surface)] drag-active'
+            : 'border-white/[0.12] bg-[color:var(--surface)] hover:border-[color:var(--ink-text)]/25 hover:bg-[color:var(--surface)]'
         } ${uploading ? 'pointer-events-none opacity-60' : ''}`}
       >
         <input
@@ -257,7 +257,7 @@ export default function ModelManager({ activeModel = null, onActiveModelChange, 
           className="hidden"
         />
         <svg
-          className="mx-auto mb-3 h-9 w-9 text-zinc-500"
+          className="mx-auto mb-3 h-9 w-9 text-[color:var(--muted)]"
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
@@ -269,10 +269,10 @@ export default function ModelManager({ activeModel = null, onActiveModelChange, 
           <polyline points="17 8 12 3 7 8" />
           <line x1="12" y1="3" x2="12" y2="15" />
         </svg>
-        <p className="text-sm font-medium text-zinc-200">
+        <p className="text-sm font-medium text-[color:var(--ink-text)]">
           {dragActive ? 'Drop model files here' : 'Drop checkpoints or click to upload'}
         </p>
-        <p className="mt-1 text-xs uppercase tracking-[0.22em] text-zinc-600">
+        <p className="mt-1 text-xs uppercase tracking-[0.22em] text-[color:var(--muted)]">
           .pth / .pt / .onnx + optional .index
         </p>
 
@@ -287,9 +287,9 @@ export default function ModelManager({ activeModel = null, onActiveModelChange, 
       </div>
 
       {error && (
-        <div className="mt-4 flex items-start gap-2 rounded-md border border-rose-400/20 bg-rose-400/10 p-4">
+        <div className="mt-4 flex items-start gap-2 rounded-md border border-[color:var(--danger)]/25 bg-[color:var(--danger)]/10 p-4">
           <svg
-            className="mt-0.5 h-4 w-4 flex-shrink-0 text-rose-300"
+            className="mt-0.5 h-4 w-4 flex-shrink-0 text-[color:var(--danger)]"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
@@ -299,20 +299,20 @@ export default function ModelManager({ activeModel = null, onActiveModelChange, 
             <line x1="15" y1="9" x2="9" y2="15" />
             <line x1="9" y1="9" x2="15" y2="15" />
           </svg>
-          <p className="text-sm text-rose-100">{error}</p>
+          <p className="text-sm text-[color:var(--danger-soft)]">{error}</p>
         </div>
       )}
 
       <div className="mt-5 space-y-3">
         {loading && models.length === 0 ? (
           <div className="flex items-center justify-center py-10">
-            <svg className="h-5 w-5 animate-spin text-zinc-500" viewBox="0 0 24 24" fill="none">
+            <svg className="h-5 w-5 animate-spin text-[color:var(--muted)]" viewBox="0 0 24 24" fill="none">
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
             </svg>
           </div>
         ) : models.length === 0 ? (
-          <p className="rounded-md border border-white/[0.07] bg-black/20 px-4 py-8 text-center text-sm text-zinc-500">
+          <p className="rounded-md border border-[color:var(--line)] bg-[color:var(--surface-2)]/60 px-4 py-8 text-center text-sm text-[color:var(--muted)]">
             No models yet — upload an RVC checkpoint, or just use the DSP studio.
           </p>
         ) : (
@@ -331,7 +331,7 @@ export default function ModelManager({ activeModel = null, onActiveModelChange, 
                 className={`rounded-md border px-4 py-4 transition ${
                   isActive
                     ? 'border-emerald-300/30 bg-emerald-400/[0.04]'
-                    : 'border-white/[0.07] bg-black/20 hover:border-white/[0.15]'
+                    : 'border-[color:var(--line)] bg-[color:var(--surface-2)]/60 hover:border-white/[0.15]'
                 }`}
               >
                 <div className="flex items-start justify-between gap-4">
@@ -340,7 +340,7 @@ export default function ModelManager({ activeModel = null, onActiveModelChange, 
                       {isActive && (
                         <div className="h-2 w-2 flex-shrink-0 rounded-full bg-emerald-400" />
                       )}
-                      <span className="truncate text-base font-medium text-zinc-100" title={name}>
+                      <span className="truncate text-base font-medium text-[color:var(--ink-text)]" title={name}>
                         {name}
                       </span>
                     </div>
@@ -372,7 +372,7 @@ export default function ModelManager({ activeModel = null, onActiveModelChange, 
                       <button
                         onClick={() => handleActivate(name)}
                         disabled={isOperating}
-                        className="rounded border border-white/10 bg-white/[0.03] px-3 py-1.5 text-xs font-medium uppercase tracking-[0.12em] text-zinc-300 transition hover:border-white/25 hover:bg-white/[0.06] hover:text-zinc-100 disabled:opacity-50"
+                        className="rounded border border-[color:var(--line)] bg-[color:var(--surface)] px-3 py-1.5 text-xs font-medium uppercase tracking-[0.12em] text-[color:var(--ink-text)] transition hover:border-[color:var(--ink-text)]/25 hover:bg-[color:var(--surface)] hover:text-[color:var(--ink-text)] disabled:opacity-50"
                       >
                         {isOperating ? 'Loading…' : 'Activate'}
                       </button>
@@ -383,8 +383,8 @@ export default function ModelManager({ activeModel = null, onActiveModelChange, 
                       disabled={isOperating}
                       className={`rounded border px-3 py-1.5 text-xs font-medium uppercase tracking-[0.12em] transition disabled:opacity-50 ${
                         deleteConfirm === name
-                          ? 'border-rose-300/40 bg-rose-300/15 text-rose-100'
-                          : 'border-white/10 bg-white/[0.03] text-zinc-500 hover:border-rose-300/30 hover:bg-rose-300/10 hover:text-rose-100'
+                          ? 'border-rose-300/40 bg-rose-300/15 text-[color:var(--danger-soft)]'
+                          : 'border-[color:var(--line)] bg-[color:var(--surface)] text-[color:var(--muted)] hover:border-rose-300/30 hover:bg-[color:var(--danger)]/10 hover:text-[color:var(--danger-soft)]'
                       }`}
                     >
                       {deleteConfirm === name ? 'Confirm' : 'Delete'}

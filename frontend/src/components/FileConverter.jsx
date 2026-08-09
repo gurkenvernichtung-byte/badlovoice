@@ -63,12 +63,12 @@ export default function FileConverter({ voice, effects, activeModel }) {
           <p className="panel-kicker">File Converter</p>
           <h2 className="panel-title">Offline voice conversion</h2>
         </div>
-        <span className="rounded border border-white/10 bg-white/[0.03] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-zinc-400">
+        <span className="rounded border border-[color:var(--line)] bg-[color:var(--surface)] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-[color:var(--muted)]">
           Uses current studio settings
         </span>
       </div>
 
-      <p className="mt-2 text-sm text-zinc-500">
+      <p className="mt-2 text-sm text-[color:var(--muted)]">
         Render a whole audio file through {activeModel ? 'the active model and ' : ''}the
         effect chain — pitch {voice.pitch > 0 ? '+' : ''}{voice.pitch} st,
         formant {voice.formant > 0 ? '+' : ''}{voice.formant} st, {fxCount} effect{fxCount === 1 ? '' : 's'}.
@@ -91,8 +91,8 @@ export default function FileConverter({ voice, effects, activeModel }) {
         onClick={() => fileInputRef.current?.click()}
         className={`mt-5 cursor-pointer rounded-md border border-dashed p-8 text-center transition-all duration-200 ${
           dragActive
-            ? 'border-white/40 bg-white/[0.05] drag-active'
-            : 'border-white/[0.12] bg-white/[0.02] hover:border-white/25 hover:bg-white/[0.04]'
+            ? 'border-[color:var(--ink-text)]/35 bg-[color:var(--surface)] drag-active'
+            : 'border-white/[0.12] bg-[color:var(--surface)] hover:border-[color:var(--ink-text)]/25 hover:bg-[color:var(--surface)]'
         }`}
       >
         <input
@@ -105,22 +105,22 @@ export default function FileConverter({ voice, effects, activeModel }) {
           }}
           className="hidden"
         />
-        <svg className="mx-auto mb-3 h-9 w-9 text-zinc-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <svg className="mx-auto mb-3 h-9 w-9 text-[color:var(--muted)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
           <path d="M9 18V5l12-2v13" />
           <circle cx="6" cy="18" r="3" />
           <circle cx="18" cy="16" r="3" />
         </svg>
         {file ? (
           <>
-            <p className="text-sm font-medium text-zinc-100">{file.name}</p>
-            <p className="mt-1 text-xs text-zinc-500">{formatSize(file.size)} · click to choose another file</p>
+            <p className="text-sm font-medium text-[color:var(--ink-text)]">{file.name}</p>
+            <p className="mt-1 text-xs text-[color:var(--muted)]">{formatSize(file.size)} · click to choose another file</p>
           </>
         ) : (
           <>
-            <p className="text-sm font-medium text-zinc-200">
+            <p className="text-sm font-medium text-[color:var(--ink-text)]">
               {dragActive ? 'Drop the audio file here' : 'Drop an audio file or click to browse'}
             </p>
-            <p className="mt-1 text-xs uppercase tracking-[0.2em] text-zinc-600">
+            <p className="mt-1 text-xs uppercase tracking-[0.2em] text-[color:var(--muted)]">
               wav · mp3 · flac · ogg · m4a
             </p>
           </>
@@ -128,7 +128,7 @@ export default function FileConverter({ voice, effects, activeModel }) {
       </div>
 
       <div className="mt-5 flex flex-wrap items-center justify-between gap-4">
-        <label className={`flex items-center gap-2.5 text-sm ${activeModel ? 'text-zinc-300' : 'text-zinc-600'}`}>
+        <label className={`flex items-center gap-2.5 text-sm ${activeModel ? 'text-[color:var(--ink-text)]' : 'text-[color:var(--muted)]'}`}>
           <input
             type="checkbox"
             checked={useModel && Boolean(activeModel)}
@@ -137,7 +137,7 @@ export default function FileConverter({ voice, effects, activeModel }) {
             className="h-4 w-4 accent-zinc-300"
           />
           Run through active model
-          <span className="text-xs text-zinc-600">
+          <span className="text-xs text-[color:var(--muted)]">
             {activeModel ? `(${activeModel})` : '(no model active — DSP only)'}
           </span>
         </label>
@@ -145,7 +145,7 @@ export default function FileConverter({ voice, effects, activeModel }) {
         <button
           onClick={handleConvert}
           disabled={!file || converting}
-          className="rounded-md bg-zinc-100 px-6 py-3 text-sm font-bold uppercase tracking-[0.14em] text-zinc-900 transition hover:bg-white disabled:cursor-not-allowed disabled:bg-white/[0.06] disabled:text-zinc-500"
+          className="rounded-md bg-zinc-100 px-6 py-3 text-sm font-bold uppercase tracking-[0.14em] text-zinc-900 transition hover:bg-white disabled:cursor-not-allowed disabled:bg-[color:var(--surface)] disabled:text-[color:var(--muted)]"
         >
           {converting ? (
             <span className="flex items-center gap-2">
@@ -162,14 +162,14 @@ export default function FileConverter({ voice, effects, activeModel }) {
       </div>
 
       {converting && (
-        <p className="mt-3 text-xs text-zinc-500">
+        <p className="mt-3 text-xs text-[color:var(--muted)]">
           Long files can take a while — the whole file runs through the pipeline server-side.
         </p>
       )}
 
       {error && (
-        <div className="mt-4 rounded-md border border-rose-300/20 bg-rose-300/10 p-4">
-          <p className="text-sm text-rose-100">{error}</p>
+        <div className="mt-4 rounded-md border border-[color:var(--danger)]/25 bg-[color:var(--danger)]/10 p-4">
+          <p className="text-sm text-[color:var(--danger-soft)]">{error}</p>
         </div>
       )}
 

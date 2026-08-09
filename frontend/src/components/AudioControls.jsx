@@ -35,7 +35,7 @@ export default function AudioControls({ devices, pipeline, wsStatus, activeModel
           <h2 className="panel-title">Mic, speaker & Start</h2>
         </div>
         <div className="flex items-center gap-2">
-          <span className="rounded border border-white/10 bg-white/[0.03] px-2 py-1 text-xs text-zinc-400">
+          <span className="rounded border border-[color:var(--line)] bg-[color:var(--surface)] px-2 py-1 text-xs text-[color:var(--muted)]">
             {activeModel ? 'AI model' : 'Pitch only'}
           </span>
           <button
@@ -51,12 +51,12 @@ export default function AudioControls({ devices, pipeline, wsStatus, activeModel
 
       <div className="mt-4 grid gap-4 sm:grid-cols-2">
         <div>
-          <label className="block text-xs text-zinc-500">Microphone</label>
+          <label className="block text-xs text-[color:var(--muted)]">Microphone</label>
           <select
             value={selectedInput}
             onChange={(event) => setSelectedInput(event.target.value)}
             disabled={pipeline.isRunning}
-            className="native-select-safe mt-2 min-h-11 w-full rounded-md border border-white/[0.08] bg-black/25 px-3 py-2.5 text-sm text-zinc-100 outline-none transition focus:border-white/30 disabled:cursor-not-allowed disabled:opacity-50"
+            className="native-select-safe mt-2 min-h-11 w-full rounded-md border border-[color:var(--line)] bg-[color:var(--surface-2)]/70 px-3 py-2.5 text-sm text-[color:var(--ink-text)] outline-none transition focus:border-[color:var(--ink-text)]/30 disabled:cursor-not-allowed disabled:opacity-50"
           >
             <option value="">Default microphone</option>
             {devices.inputDevices.map((device) => (
@@ -68,12 +68,12 @@ export default function AudioControls({ devices, pipeline, wsStatus, activeModel
         </div>
 
         <div>
-          <label className="block text-xs text-zinc-500">Speaker</label>
+          <label className="block text-xs text-[color:var(--muted)]">Speaker</label>
           <select
             value={selectedOutput}
             onChange={(event) => setSelectedOutput(event.target.value)}
             disabled={pipeline.isRunning}
-            className="native-select-safe mt-2 min-h-11 w-full rounded-md border border-white/[0.08] bg-black/25 px-3 py-2.5 text-sm text-zinc-100 outline-none transition focus:border-white/30 disabled:cursor-not-allowed disabled:opacity-50"
+            className="native-select-safe mt-2 min-h-11 w-full rounded-md border border-[color:var(--line)] bg-[color:var(--surface-2)]/70 px-3 py-2.5 text-sm text-[color:var(--ink-text)] outline-none transition focus:border-[color:var(--ink-text)]/30 disabled:cursor-not-allowed disabled:opacity-50"
           >
             <option value="">Default speaker</option>
             {devices.outputDevices.map((device) => (
@@ -86,12 +86,12 @@ export default function AudioControls({ devices, pipeline, wsStatus, activeModel
       </div>
 
       {!devices.hasLabels && (
-        <p className="mt-2 text-xs text-zinc-500">
+        <p className="mt-2 text-xs text-[color:var(--muted)]">
           Allow microphone access to see device names.
         </p>
       )}
       {devices.permissionState === 'denied' && (
-        <p className="mt-2 text-xs text-rose-300">
+        <p className="mt-2 text-xs text-[color:var(--danger)]">
           Microphone permission is blocked. Allow it, then tap Start.
         </p>
       )}
@@ -120,12 +120,12 @@ export default function AudioControls({ devices, pipeline, wsStatus, activeModel
       </div>
 
       {!pipeline.isRunning && wsStatus !== 'connected' && (
-        <p className="mt-3 text-xs text-zinc-500">
+        <p className="mt-3 text-xs text-[color:var(--muted)]">
           Server offline — pitch still works after Start. Connect for AI models.
         </p>
       )}
       {!pipeline.isRunning && wsStatus === 'connected' && !activeModel && (
-        <p className="mt-3 text-xs text-zinc-500">
+        <p className="mt-3 text-xs text-[color:var(--muted)]">
           No AI model loaded — Start uses pitch presets. Open Models to activate one.
         </p>
       )}
@@ -142,8 +142,8 @@ export default function AudioControls({ devices, pipeline, wsStatus, activeModel
       )}
 
       {error && (
-        <div className="mt-3 rounded-md border border-rose-400/25 bg-rose-500/10 p-3">
-          <p className="text-sm text-rose-200">{error}</p>
+        <div className="mt-3 rounded-md border border-[color:var(--danger)]/30 bg-[color:var(--danger)]/10 p-3">
+          <p className="text-sm text-[color:var(--danger-soft)]">{error}</p>
         </div>
       )}
       {devices.error && !error && (

@@ -1,22 +1,12 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Layout from './components/Layout';
 import StatusIndicator from './components/StatusIndicator';
-import AudioControls from './components/AudioControls';
 import GlobalSettings from './components/GlobalSettings';
 import ModelManager from './components/ModelManager';
-import MonitorDisplay from './components/MonitorDisplay';
-import Visualizer from './components/Visualizer';
-import VoiceLab from './components/VoiceLab';
-import EffectsRack from './components/EffectsRack';
-import PresetBar from './components/PresetBar';
-import Recorder from './components/Recorder';
 import FileConverter from './components/FileConverter';
 import SlotBay from './components/SlotBay';
-import StreamExtras from './components/StreamExtras';
-import BackgroundBlocker from './components/BackgroundBlocker';
-import VoiceProfiles from './components/VoiceProfiles';
 import EngineModes from './components/EngineModes';
-import SimpleHome from './components/SimpleHome';
+import StudioPage from './components/StudioPage';
 import useWebSocket from './hooks/useWebSocket';
 import useAudioPipeline from './hooks/useAudioPipeline';
 import useAudioDevices from './hooks/useAudioDevices';
@@ -142,13 +132,14 @@ export default function App() {
   const pipeline = useAudioPipeline(wsHook);
   const devices = useAudioDevices();
 
-  // Deep links: ?tab=models|converter selects a tab, ?settings opens the modal.
+  // Density: simple | studio | advanced (legacy "pro" maps to studio).
   const [uiMode, setUiMode] = useState(() => {
     const param = new URLSearchParams(window.location.search).get('tab');
-    if (param === 'models' || param === 'converter') return 'pro';
+    if (param === 'models' || param === 'converter') return 'studio';
     const stored = readStored(UI_MODE_STORAGE_KEY);
-    if (stored === 'pro' || stored === 'simple') return stored;
-    return 'simple';
+    if (stored === 'pro') return 'studio';
+    if (stored === 'simple' || stored === 'studio' || stored === 'advanced') return stored;
+    return 'studio';
   });
   const [tab, setTab] = useState(() => {
     const param = new URLSearchParams(window.location.search).get('tab');
@@ -162,7 +153,6 @@ export default function App() {
   const [voice, setVoice] = useState(loadInitialVoice);
   const [effects, setEffects] = useState(loadInitialEffects);
   const [activePresetId, setActivePresetId] = useState(null);
-  const [latencyHistory, setLatencyHistory] = useState([]);
   const [extras, setExtras] = useState(() => {
     const stored = readStored(EXTRAS_STORAGE_KEY) || {};
     return {
@@ -319,19 +309,6 @@ export default function App() {
     });
   }, [setOnSettingsResponse]);
 
-  // Rolling round-trip latency history for the sparkline.
-  useEffect(() => {
-    if (latency <= 0) return;
-    setLatencyHistory((prev) => {
-      const next = [...prev, latency];
-      return next.length > 60 ? next.slice(next.length - 60) : next;
-    });
-  }, [latency]);
-
-  useEffect(() => {
-    if (!pipeline.isRunning) setLatencyHistory([]);
-  }, [pipeline.isRunning]);
-
   // --- Handlers --------------------------------------------------------------
 
   const handleVoiceChange = useCallback((partial) => {
@@ -470,8 +447,9 @@ export default function App() {
 
   // --- Render ----------------------------------------------------------------
 
-  const handleUiModeChange = useCallback((mode) => {
-    const next = mode === 'pro' ? 'pro' : 'simple';
+  const handleDensityChange = useCallback((mode) => {
+    const next =
+      mode === 'simple' || mode === 'studio' || mode === 'advanced' ? mode : 'studio';
     setUiMode(next);
     writeStored(UI_MODE_STORAGE_KEY, next);
     if (next === 'simple') setTab('studio');
@@ -480,7 +458,7 @@ export default function App() {
   const headerActions = (
     <button
       onClick={() => setIsSettingsOpen(true)}
-      className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/[0.04] text-[color:var(--muted)] transition hover:border-white/20 hover:text-[color:var(--ink-text)]"
+      className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-[color:var(--line)] bg-[color:var(--surface)] text-[color:var(--muted)] transition hover:border-[color:var(--ink-text)]/20 hover:text-[color:var(--ink-text)]"
       title="Session settings"
       aria-label="Open settings"
     >
@@ -498,133 +476,108 @@ export default function App() {
     </button>
   );
 
-  const isSimple = uiMode !== 'pro';
+  const density = uiMode === 'pro' ? 'studio' : uiMode;
 
   return (
     <Layout
       tab={tab}
       onTabChange={setTab}
-      uiMode={isSimple ? 'simple' : 'pro'}
-      onUiModeChange={handleUiModeChange}
+      density={density}
+      onDensityChange={handleDensityChange}
+      isLive={pipeline.isRunning}
       statusSlot={<StatusIndicator wsStatus={wsStatus} activeModel={activeModel} mode={serverStats.mode} />}
       headerActions={headerActions}
     >
-      {isSimple && (
-        <SimpleHome
+      {tab === 'studio' && (
+        <StudioPage
+          density={density}
           devices={devices}
           pipeline={pipeline}
           voice={voice}
           onVoiceChange={handleVoiceChange}
+          effects={effectsWithGate}
+          onEffectsChange={handleEffectsChange}
           activePresetId={activePresetId}
           onSelectProfile={applyVoiceProfile}
+          applyPreset={applyPreset}
+          getCurrentSettings={getCurrentSettings}
+          extras={extras}
+          onExtrasChange={handleExtrasChange}
+          onApplyLatencyMode={handleApplyLatencyMode}
+          getProfileSnapshot={getProfileSnapshot}
+          wsStatus={wsStatus}
+          activeModel={activeModel}
+          latency={latency}
+          serverMs={serverMs}
+          serverStats={serverStats}
+          runtimeConfig={runtimeConfig}
         />
       )}
 
-      {!isSimple && tab === 'studio' && (
-        <div className="space-y-5 animate-fade-in-up">
-          <EngineModes
-            hasModel={Boolean(activeModel)}
-            torchOk={Boolean(runtimeConfig.runtime?.torch?.available)}
-            onnxOk={Boolean(runtimeConfig.runtime?.onnx?.available)}
-          />
-
-          <BackgroundBlocker
-            enabled={Boolean(extras.blockBackground)}
-            thresholdDb={Number(extras.vadThresholdDb) || -56}
-            gateOpen={pipeline.gateOpen}
-            levelDb={pipeline.gateLevelDb}
-            onChange={(partial) => {
-              setExtras((prev) => ({
-                ...prev,
-                blockBackground: partial.enabled ?? prev.blockBackground,
-                vadThresholdDb: partial.thresholdDb ?? prev.vadThresholdDb,
-                vadEnabled: partial.enabled ?? prev.blockBackground,
-              }));
-            }}
-          />
-
-          <VoiceProfiles
-            activeId={activePresetId}
-            onSelect={applyVoiceProfile}
-            hasModel={Boolean(activeModel)}
-          />
-
-          <div className="grid grid-cols-1 gap-5 xl:grid-cols-[minmax(0,1fr)_380px]">
-            <div className="space-y-5">
-              <Visualizer getAnalysers={pipeline.getAnalysers} isRunning={pipeline.isRunning} />
-              <AudioControls
-                devices={devices}
-                pipeline={pipeline}
-                wsStatus={wsStatus}
-                activeModel={activeModel}
-              />
-              <Recorder
-                pipeline={pipeline}
-                onEnsureStarted={async () => {
-                  if (pipeline.isRunning) return;
-                  await devices.refresh?.();
-                  await pipeline.start();
-                }}
-              />
+      {tab === 'models' && (
+        <div className="mx-auto max-w-4xl space-y-4 animate-fade-in-up pb-8">
+          <header className="panel p-5">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[color:var(--muted)]">
+              Models
+            </p>
+            <h1 className="mt-1 font-display text-2xl font-bold tracking-tight">
+              Voice model manager
+            </h1>
+            <p className="mt-1 max-w-2xl text-sm text-[color:var(--muted)]">
+              Load RVC (.pth) or ONNX voices, activate one for live conversion, then return to Studio and Start.
+            </p>
+            <div className="mt-4 flex flex-wrap gap-3 text-sm">
+              <div className="rounded-xl border border-[color:var(--line)] bg-[color:var(--surface)] px-3 py-2">
+                <p className="text-[10px] uppercase tracking-[0.12em] text-[color:var(--muted)]">Active</p>
+                <p className="font-semibold">{activeModel || 'None · DSP pitch only'}</p>
+              </div>
+              <div className="rounded-xl border border-[color:var(--line)] bg-[color:var(--surface)] px-3 py-2">
+                <p className="text-[10px] uppercase tracking-[0.12em] text-[color:var(--muted)]">Torch</p>
+                <p className="font-semibold">
+                  {runtimeConfig.runtime?.torch?.available ? 'Ready' : 'Unavailable'}
+                </p>
+              </div>
+              <div className="rounded-xl border border-[color:var(--line)] bg-[color:var(--surface)] px-3 py-2">
+                <p className="text-[10px] uppercase tracking-[0.12em] text-[color:var(--muted)]">ONNX</p>
+                <p className="font-semibold">
+                  {runtimeConfig.runtime?.onnx?.available ? 'Ready' : 'Unavailable'}
+                </p>
+              </div>
+              <div className="rounded-xl border border-[color:var(--line)] bg-[color:var(--surface)] px-3 py-2">
+                <p className="text-[10px] uppercase tracking-[0.12em] text-[color:var(--muted)]">Sample rate</p>
+                <p className="font-semibold">{runtimeConfig.sampleRate} Hz</p>
+              </div>
             </div>
-
-            <div className="space-y-5">
-              <MonitorDisplay
-                inputLevel={pipeline.inputLevel}
-                outputLevel={pipeline.outputLevel}
-                latency={latency}
-                latencyHistory={latencyHistory}
-                serverMs={serverMs}
-                serverStats={serverStats}
-              />
-              <VoiceLab
-                voice={voice}
-                onChange={handleVoiceChange}
-                hasModel={Boolean(activeModel)}
-                isRunning={pipeline.isRunning}
-              />
-            </div>
-          </div>
-
-          <StreamExtras
-            vadEnabled={extras.vadEnabled}
-            vadThresholdDb={extras.vadThresholdDb}
-            latencyMode={extras.latencyMode}
-            crossfadeMs={extras.crossfadeMs}
-            extraBufferChunks={extras.extraBufferChunks}
-            onChange={handleExtrasChange}
-            onApplyLatencyMode={handleApplyLatencyMode}
-            getSnapshot={getProfileSnapshot}
-            disabled={pipeline.isRunning}
-          />
-
-          <PresetBar
-            activePresetId={activePresetId}
-            onApplyPreset={applyPreset}
-            getCurrentSettings={getCurrentSettings}
-          />
-
-          <EffectsRack
-            effects={effectsWithGate}
-            formantShift={voice.formant}
-            onEffectsChange={handleEffectsChange}
-          />
-        </div>
-      )}
-
-      {!isSimple && tab === 'models' && (
-        <div className="mx-auto max-w-4xl space-y-5 animate-fade-in-up">
+          </header>
           <SlotBay activeModel={activeModel} onActiveModelChange={setActiveModel} />
           <ModelManager
             activeModel={activeModel}
             onActiveModelChange={setActiveModel}
             runtime={runtimeConfig.runtime}
           />
+          {density === 'advanced' && (
+            <EngineModes
+              hasModel={Boolean(activeModel)}
+              torchOk={Boolean(runtimeConfig.runtime?.torch?.available)}
+              onnxOk={Boolean(runtimeConfig.runtime?.onnx?.available)}
+            />
+          )}
         </div>
       )}
 
-      {!isSimple && tab === 'converter' && (
-        <div className="mx-auto max-w-3xl animate-fade-in-up">
+      {tab === 'converter' && (
+        <div className="mx-auto max-w-3xl animate-fade-in-up pb-8">
+          <header className="mb-4 panel p-5">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[color:var(--muted)]">
+              Converter
+            </p>
+            <h1 className="mt-1 font-display text-2xl font-bold tracking-tight">
+              Offline file conversion
+            </h1>
+            <p className="mt-1 text-sm text-[color:var(--muted)]">
+              Uses your current Studio pitch, formant, effects, and active model.
+            </p>
+          </header>
           <FileConverter
             voice={voice}
             effects={effects}

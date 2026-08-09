@@ -12,9 +12,9 @@ function BigSlider({ label, value, min, max, step, unit, onChange, onReset }) {
   return (
     <div>
       <div className="flex items-center justify-between gap-3">
-        <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-zinc-500">{label}</p>
+        <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[color:var(--muted)]">{label}</p>
         <div className="flex items-center gap-2">
-          <span className={`font-mono text-xl font-semibold tabular-nums tracking-[-0.03em] ${value === 0 ? 'text-zinc-500' : 'text-zinc-100'}`}>
+          <span className={`font-mono text-xl font-semibold tabular-nums tracking-[-0.03em] ${value === 0 ? 'text-[color:var(--muted)]' : 'text-[color:var(--ink-text)]'}`}>
             {value > 0 ? '+' : ''}{Number(value).toFixed(1)}{unit}
           </span>
           <button
@@ -35,7 +35,7 @@ function BigSlider({ label, value, min, max, step, unit, onChange, onReset }) {
         onChange={(event) => onChange(Number(event.target.value))}
         className="mt-3 w-full"
       />
-      <div className="mt-1.5 flex items-center justify-between text-[10px] font-medium text-zinc-600">
+      <div className="mt-1.5 flex items-center justify-between text-[10px] font-medium text-[color:var(--muted)]">
         <span>{min}</span>
         <span>0</span>
         <span>+{max}</span>
@@ -48,8 +48,8 @@ function MiniSlider({ label, value, min, max, step, onChange, format = (v) => v.
   return (
     <div>
       <div className="flex items-center justify-between">
-        <span className="text-[10px] font-medium uppercase tracking-[0.12em] text-zinc-500">{label}</span>
-        <span className="font-mono text-xs tabular-nums text-zinc-300">{format(Number(value))}</span>
+        <span className="text-[10px] font-medium uppercase tracking-[0.12em] text-[color:var(--muted)]">{label}</span>
+        <span className="font-mono text-xs tabular-nums text-[color:var(--ink-text)]">{format(Number(value))}</span>
       </div>
       <input
         type="range"
@@ -64,8 +64,58 @@ function MiniSlider({ label, value, min, max, step, onChange, format = (v) => v.
   );
 }
 
-export default function VoiceLab({ voice, onChange, hasModel, isRunning }) {
+export default function VoiceLab({ voice, onChange, hasModel, isRunning, compact = false }) {
   const [showAdvanced, setShowAdvanced] = useState(false);
+
+  const sliders = (
+    <div className={compact ? 'mt-3 space-y-4' : 'mt-5 space-y-6'}>
+      <BigSlider
+        label="Pitch Shift"
+        value={voice.pitch}
+        min={-12}
+        max={12}
+        step={0.5}
+        unit=" st"
+        onChange={(value) => onChange({ pitch: value })}
+        onReset={() => onChange({ pitch: 0 })}
+      />
+
+      <BigSlider
+        label="Formant Shift"
+        value={voice.formant}
+        min={-12}
+        max={12}
+        step={0.5}
+        unit=" st"
+        onChange={(value) => onChange({ formant: value })}
+        onReset={() => onChange({ formant: 0 })}
+      />
+    </div>
+  );
+
+  if (compact) {
+    return (
+      <section className="panel p-4">
+        <div className="flex items-center justify-between gap-2">
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[color:var(--muted)]">
+              Voice Lab
+            </p>
+            <h2 className="mt-0.5 text-base font-semibold tracking-tight">Pitch & formant</h2>
+          </div>
+          <button
+            type="button"
+            className="chip-button !min-h-9 !px-2.5"
+            onClick={() => onChange({ pitch: 0, formant: 0 })}
+            disabled={voice.pitch === 0 && voice.formant === 0}
+          >
+            Reset
+          </button>
+        </div>
+        {sliders}
+      </section>
+    );
+  }
 
   return (
     <section className="panel p-5">
@@ -74,49 +124,27 @@ export default function VoiceLab({ voice, onChange, hasModel, isRunning }) {
           <p className="panel-kicker">Voice Lab</p>
           <h2 className="panel-title">Pitch & timbre</h2>
           {voice.pitch === 0 && voice.formant === 0 ? (
-            <p className="mt-1 text-xs text-[#e09a55]">Pitch/formant at 0 = no change. Drag pitch up/down.</p>
+            <p className="mt-1 text-xs text-[color:var(--accent-soft)]">Pitch/formant at 0 = no change. Drag pitch up/down.</p>
           ) : (
-            <p className="mt-1 text-xs text-[#6ee7b7]">
+            <p className="mt-1 text-xs text-[color:var(--success)]">
               Live shift: pitch {voice.pitch > 0 ? '+' : ''}{voice.pitch} · formant {voice.formant > 0 ? '+' : ''}{voice.formant}
             </p>
           )}
         </div>
         <span className={`rounded border px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] ${
           isRunning
-            ? 'border-emerald-300/30 bg-emerald-400/[0.07] text-emerald-200'
-            : 'border-white/10 bg-white/[0.03] text-zinc-500'
+            ? 'border-[color:var(--accent)]/40 bg-[color:var(--accent)]/10 text-[color:var(--accent-soft)]'
+            : 'border-[color:var(--line)] bg-[color:var(--surface)] text-[color:var(--muted)]'
         }`}
         >
           {isRunning ? 'Live' : 'Applies on start'}
         </span>
       </div>
 
-      <div className="mt-5 space-y-6">
-        <BigSlider
-          label="Pitch Shift"
-          value={voice.pitch}
-          min={-12}
-          max={12}
-          step={0.5}
-          unit=" st"
-          onChange={(value) => onChange({ pitch: value })}
-          onReset={() => onChange({ pitch: 0 })}
-        />
+      {sliders}
 
-        <BigSlider
-          label="Formant Shift"
-          value={voice.formant}
-          min={-12}
-          max={12}
-          step={0.5}
-          unit=" st"
-          onChange={(value) => onChange({ formant: value })}
-          onReset={() => onChange({ formant: 0 })}
-        />
-      </div>
-
-      <div className="mt-6 border-t border-white/[0.08] pt-5">
-        <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-zinc-500">
+      <div className="mt-6 border-t border-[color:var(--line)] pt-5">
+        <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[color:var(--muted)]">
           F0 Method {hasModel ? '' : '· needs an RVC model'}
         </p>
         <div className="mt-3 grid grid-cols-2 gap-2">
@@ -128,12 +156,12 @@ export default function VoiceLab({ voice, onChange, hasModel, isRunning }) {
                 onClick={() => onChange({ f0Method: method.value })}
                 className={`rounded-md border px-3 py-2.5 text-left transition ${
                   selected
-                    ? 'border-white/30 bg-white/[0.07] text-zinc-100'
-                    : 'border-white/[0.08] bg-black/20 text-zinc-400 hover:border-white/20 hover:text-zinc-200'
+                    ? 'border-[color:var(--ink-text)]/30 bg-white/[0.07] text-[color:var(--ink-text)]'
+                    : 'border-[color:var(--line)] bg-[color:var(--surface-2)]/60 text-[color:var(--muted)] hover:border-[color:var(--ink-text)]/20 hover:text-[color:var(--ink-text)]'
                 }`}
               >
                 <p className="text-sm font-semibold leading-tight">{method.label}</p>
-                <p className={`mt-0.5 text-[11px] ${selected ? 'text-zinc-400' : 'text-zinc-600'}`}>
+                <p className={`mt-0.5 text-[11px] ${selected ? 'text-[color:var(--muted)]' : 'text-[color:var(--muted)]'}`}>
                   {method.description}
                 </p>
               </button>
@@ -142,10 +170,10 @@ export default function VoiceLab({ voice, onChange, hasModel, isRunning }) {
         </div>
       </div>
 
-      <div className="mt-5 border-t border-white/[0.08] pt-4">
+      <div className="mt-5 border-t border-[color:var(--line)] pt-4">
         <button
           onClick={() => setShowAdvanced((v) => !v)}
-          className="flex w-full items-center justify-between text-[10px] font-semibold uppercase tracking-[0.18em] text-zinc-500 transition hover:text-zinc-300"
+          className="flex w-full items-center justify-between text-[10px] font-semibold uppercase tracking-[0.18em] text-[color:var(--muted)] transition hover:text-[color:var(--ink-text)]"
         >
           RVC Advanced
           <svg
@@ -186,7 +214,7 @@ export default function VoiceLab({ voice, onChange, hasModel, isRunning }) {
               step={0.01}
               onChange={(value) => onChange({ protect: value })}
             />
-            <p className="text-[11px] leading-4 text-zinc-600">
+            <p className="text-[11px] leading-4 text-[color:var(--muted)]">
               Index rate blends retrieval features, RMS mix follows input loudness,
               protect preserves breaths and consonants.
             </p>

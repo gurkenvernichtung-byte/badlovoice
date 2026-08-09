@@ -22,12 +22,12 @@ function VuMeter({ label, level }) {
   return (
     <div className="space-y-1.5">
       <div className="flex items-center justify-between">
-        <span className="text-[10px] font-semibold uppercase tracking-[0.16em] text-zinc-500">{label}</span>
-        <span className="font-mono text-[10px] uppercase tracking-[0.1em] text-zinc-600">
+        <span className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[color:var(--muted)]">{label}</span>
+        <span className="font-mono text-[10px] uppercase tracking-[0.1em] text-[color:var(--muted)]">
           {percent.toFixed(0)}%
         </span>
       </div>
-      <div className="relative h-2 bg-white/[0.06]">
+      <div className="relative h-2 bg-[color:var(--surface)]">
         <div
           className={`h-full ${barColor} transition-all duration-75 ease-out`}
           style={{ width: `${percent}%` }}
@@ -70,9 +70,9 @@ function Sparkline({ history }) {
 
 function StatChip({ label, value }) {
   return (
-    <div className="rounded border border-white/[0.08] bg-black/25 px-3 py-2 text-center">
-      <p className="text-[9px] font-semibold uppercase tracking-[0.14em] text-zinc-500">{label}</p>
-      <p className="mt-1 font-mono text-sm font-semibold tabular-nums text-zinc-200">{value}</p>
+    <div className="rounded border border-[color:var(--line)] bg-[color:var(--surface-2)]/70 px-3 py-2 text-center">
+      <p className="text-[9px] font-semibold uppercase tracking-[0.14em] text-[color:var(--muted)]">{label}</p>
+      <p className="mt-1 font-mono text-sm font-semibold tabular-nums text-[color:var(--ink-text)]">{value}</p>
     </div>
   );
 }
@@ -89,12 +89,12 @@ export default function MonitorDisplay({
   const networkMs = Math.max(0, Math.round(latency - (serverMs || 0)));
   const latencyColor =
     latencyMs <= 0
-      ? 'text-zinc-500'
+      ? 'text-[color:var(--muted)]'
       : latencyMs < 60
         ? 'text-emerald-300'
         : latencyMs < 150
           ? 'text-amber-200'
-          : 'text-rose-300';
+          : 'text-[color:var(--danger)]';
 
   return (
     <section className="panel p-5">
@@ -104,7 +104,7 @@ export default function MonitorDisplay({
           <h2 className="panel-title">Levels & latency</h2>
         </div>
         {serverStats?.effectsActive > 0 && (
-          <span className="rounded border border-white/10 bg-white/[0.04] px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-zinc-300">
+          <span className="rounded border border-[color:var(--line)] bg-[color:var(--surface)] px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-[color:var(--ink-text)]">
             {serverStats.effectsActive} FX
           </span>
         )}
@@ -115,15 +115,15 @@ export default function MonitorDisplay({
         <VuMeter label="Output" level={outputLevel} />
       </div>
 
-      <div className="mt-5 rounded border border-white/[0.08] bg-black/25 p-4">
+      <div className="mt-5 rounded border border-[color:var(--line)] bg-[color:var(--surface-2)]/70 p-4">
         <div className="flex items-end justify-between gap-3">
           <div>
-            <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-zinc-500">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[color:var(--muted)]">
               Round trip
             </p>
             <p className={`mt-1 font-mono text-3xl font-semibold tabular-nums tracking-[-0.04em] ${latencyColor}`}>
               {latencyMs > 0 ? `${latencyMs}` : '--'}
-              <span className="ml-1 text-sm text-zinc-500">ms</span>
+              <span className="ml-1 text-sm text-[color:var(--muted)]">ms</span>
             </p>
           </div>
           <div className="w-28 flex-shrink-0 sm:w-36">

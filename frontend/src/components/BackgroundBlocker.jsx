@@ -21,7 +21,7 @@ export default function BackgroundBlocker({
         <div>
           <p className="panel-kicker">Step 1 · Clean input</p>
           <h2 className="panel-title">Block background voice</h2>
-          <p className="mt-1 max-w-xl text-sm text-zinc-500">
+          <p className="mt-1 max-w-xl text-sm text-[color:var(--muted)]">
             Mutes the mic when you stop talking. Cuts room noise and other people in the background
             before pitch / FX run.
           </p>
@@ -33,7 +33,7 @@ export default function BackgroundBlocker({
           className={`rounded px-4 py-2 text-[11px] font-bold uppercase tracking-[0.14em] transition ${
             enabled
               ? 'border border-[#6ee7b7]/50 bg-[#6ee7b7] text-[#071416]'
-              : 'border border-white/15 bg-white/[0.04] text-zinc-400'
+              : 'border border-[color:var(--line)] bg-[color:var(--surface)] text-[color:var(--muted)]'
           }`}
         >
           {enabled ? 'Blocking on' : 'Blocking off'}
@@ -42,7 +42,7 @@ export default function BackgroundBlocker({
 
       <div className={`mt-4 ${enabled ? '' : 'opacity-40'}`}>
         <div className="flex items-center justify-between gap-2">
-          <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-zinc-500">
+          <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[color:var(--muted)]">
             Sensitivity
           </span>
           <span className="font-mono text-xs text-[#6ee7b7]">
@@ -59,12 +59,12 @@ export default function BackgroundBlocker({
           onChange={(e) => onChange({ thresholdDb: Number(e.target.value) })}
           className="mt-2 w-full"
         />
-        <div className="mt-1 flex justify-between text-[10px] text-zinc-600">
+        <div className="mt-1 flex justify-between text-[10px] text-[color:var(--muted)]">
           <span>More blocking</span>
           <span>Easier open</span>
         </div>
 
-        <div className="relative mt-4 h-3 overflow-hidden rounded-sm bg-black/40">
+        <div className="relative mt-4 h-3 overflow-hidden rounded-sm bg-[color:var(--surface-2)]">
           <div
             className="absolute inset-y-0 left-0 bg-[#3dd6e0]/35 transition-[width] duration-75"
             style={{ width: `${levelPct}%` }}
@@ -75,7 +75,7 @@ export default function BackgroundBlocker({
             title="Gate threshold"
           />
         </div>
-        <p className="mt-2 text-xs text-zinc-500">
+        <p className="mt-2 text-xs text-[color:var(--muted)]">
           Copper line = threshold. Status must say OPEN while you talk. If it stays CLOSED on your
           voice, drag toward Easier open (right). Only tighten if background still leaks.
         </p>

@@ -57,7 +57,7 @@ export default function StreamExtras({
       </div>
 
       <div>
-        <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-zinc-500">
+        <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[color:var(--muted)]">
           Latency mode · echidna
         </p>
         <div className="mt-2 grid gap-2 sm:grid-cols-3">
@@ -70,14 +70,14 @@ export default function StreamExtras({
               className={`rounded border px-3 py-2 text-left transition ${
                 latencyMode === mode.id
                   ? 'border-[#6ee7b7] bg-[#6ee7b7]/10'
-                  : 'border-white/10 bg-black/20 hover:border-white/25'
+                  : 'border-[color:var(--line)] bg-[color:var(--surface-2)]/60 hover:border-[color:var(--ink-text)]/25'
               }`}
             >
-              <span className="block text-sm font-semibold text-zinc-100">{mode.label}</span>
-              <span className="mt-1 block font-mono text-[10px] text-zinc-500">
+              <span className="block text-sm font-semibold text-[color:var(--ink-text)]">{mode.label}</span>
+              <span className="mt-1 block font-mono text-[10px] text-[color:var(--muted)]">
                 chunk {mode.chunk_size} · xf {mode.crossfade_ms}ms
               </span>
-              <span className="mt-1 block text-xs text-zinc-500">{mode.blurb}</span>
+              <span className="mt-1 block text-xs text-[color:var(--muted)]">{mode.blurb}</span>
             </button>
           ))}
         </div>
@@ -85,7 +85,7 @@ export default function StreamExtras({
 
       <div className="grid gap-4 sm:grid-cols-2">
         <label className="block">
-          <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-zinc-500">
+          <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[color:var(--muted)]">
             Crossfade ms · w-okada SOLA
           </span>
           <input
@@ -100,7 +100,7 @@ export default function StreamExtras({
           <span className="font-mono text-xs text-[#6ee7b7]">{crossfadeMs} ms</span>
         </label>
         <label className="block">
-          <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-zinc-500">
+          <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[color:var(--muted)]">
             Extra buffer chunks
           </span>
           <input
@@ -116,13 +116,13 @@ export default function StreamExtras({
         </label>
       </div>
 
-      <div className="rounded border border-white/10 bg-black/20 p-3">
+      <div className="rounded border border-[color:var(--line)] bg-[color:var(--surface-2)]/60 p-3">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div>
-            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-zinc-500">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[color:var(--muted)]">
               VAD / noise gate · Vonovox
             </p>
-            <p className="mt-1 text-xs text-zinc-500">Mute silence so the model stays quiet between words.</p>
+            <p className="mt-1 text-xs text-[color:var(--muted)]">Mute silence so the model stays quiet between words.</p>
           </div>
           <button
             type="button"
@@ -133,7 +133,7 @@ export default function StreamExtras({
           </button>
         </div>
         <label className="mt-3 block">
-          <span className="text-[10px] uppercase tracking-wider text-zinc-500">Threshold dB</span>
+          <span className="text-[10px] uppercase tracking-wider text-[color:var(--muted)]">Threshold dB</span>
           <input
             type="range"
             min={-80}
@@ -149,7 +149,7 @@ export default function StreamExtras({
       </div>
 
       <div>
-        <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-zinc-500">
+        <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[color:var(--muted)]">
           Profiles · echidna
         </p>
         <div className="mt-2 flex flex-wrap gap-2">
@@ -157,7 +157,7 @@ export default function StreamExtras({
             value={profileName}
             onChange={(e) => setProfileName(e.target.value)}
             placeholder="Profile name"
-            className="min-w-[10rem] flex-1 rounded border border-white/10 bg-black/30 px-2 py-1.5 text-sm"
+            className="min-w-[10rem] flex-1 rounded border border-[color:var(--line)] bg-black/30 px-2 py-1.5 text-sm"
           />
           <button type="button" className="chip-button" onClick={persistProfile}>
             Save profile
@@ -165,15 +165,15 @@ export default function StreamExtras({
         </div>
         <div className="mt-2 flex flex-wrap gap-2">
           {profiles.map((p) => (
-            <div key={p.id} className="flex items-center gap-1 rounded border border-white/10 px-2 py-1 text-xs">
+            <div key={p.id} className="flex items-center gap-1 rounded border border-[color:var(--line)] px-2 py-1 text-xs">
               <button
                 type="button"
-                className="text-zinc-200 hover:text-[#6ee7b7]"
+                className="text-[color:var(--ink-text)] hover:text-[#6ee7b7]"
                 onClick={() => onChange({ applyProfile: p.settings })}
               >
                 {p.name}
               </button>
-              <button type="button" className="text-zinc-600 hover:text-red-300" onClick={() => removeProfile(p.id)}>
+              <button type="button" className="text-[color:var(--muted)] hover:text-red-300" onClick={() => removeProfile(p.id)}>
                 ×
               </button>
             </div>
@@ -186,7 +186,7 @@ export default function StreamExtras({
           {showGuide ? 'Hide' : 'Show'} VAC routing guide · Vonovox
         </button>
         {showGuide ? (
-          <ol className="mt-3 list-decimal space-y-2 pl-5 text-sm text-zinc-400">
+          <ol className="mt-3 list-decimal space-y-2 pl-5 text-sm text-[color:var(--muted)]">
             <li>Install VAC (Virtual Audio Cable) — prefer VAC over VB-Cable for fewer glitches.</li>
             <li>Set mic + virtual line to 48000 Hz, 1 ch, 16-bit when possible.</li>
             <li>BadloVoice input = your real mic. Output = Line 1 (VAC).</li>

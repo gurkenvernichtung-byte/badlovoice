@@ -34,6 +34,35 @@ export default function useAudioPipeline(wsHook) {
   const gateParamsRef = useRef({ enabled: false, thresholdDb: -56, holdMs: 280 });
   const recordDestRef = useRef(null);
   const recordProcessorRef = useRef(null);
+  const listenModeRef = useRef('local'); // local | rvc
+  // Speakers + mic = feedback. Default off; user opts in (headphones).
+  const hearMyselfRef = useRef(false);
+  const [hearMyself, setHearMyselfState] = useState(false);
+
+  const applyOutputGains = useCallback(() => {
+    const ctx = audioContextRef.current;
+    const now = ctx?.currentTime ?? 0;
+    const hear = hearMyselfRef.current;
+    const rvc = listenModeRef.current === 'rvc' || listenModeRef.current === 'server';
+
+    if (monitorGainRef.current) {
+      monitorGainRef.current.gain.cancelScheduledValues(now);
+      const localLevel = !hear ? 0 : rvc ? 0.12 : 1.0;
+      monitorGainRef.current.gain.setValueAtTime(localLevel, now);
+    }
+    if (playbackGainRef.current) {
+      playbackGainRef.current.gain.cancelScheduledValues(now);
+      const playLevel = !hear ? 0 : rvc ? 1.8 : 1.0;
+      playbackGainRef.current.gain.setValueAtTime(playLevel, now);
+    }
+    if (monitorNodeRef.current) {
+      monitorNodeRef.current.port.postMessage({
+        ...monitorParamsRef.current,
+        enabled: hear && !rvc,
+        pitch: rvc ? 0 : monitorParamsRef.current.pitch,
+      });
+    }
+  }, []);
 
   const rmsToMeter = (rms) => {
     // Map ~-50 dB..0 dB → 0..100 so meters actually move when you talk.
@@ -86,27 +115,24 @@ export default function useAudioPipeline(wsHook) {
   }, []);
 
   // local = pitched DSP preview (instant). rvc = hear server model (duck local).
-  const setListenMode = useCallback((mode) => {
-    const rvc = mode === 'rvc' || mode === 'server';
-    const ctx = audioContextRef.current;
-    const now = ctx?.currentTime ?? 0;
-    if (monitorGainRef.current) {
-      monitorGainRef.current.gain.cancelScheduledValues(now);
-      // Keep local monitor under ~1.0 so recordings don't hard-clip.
-      monitorGainRef.current.gain.setValueAtTime(rvc ? 0.12 : 1.0, now);
-    }
-    if (playbackGainRef.current) {
-      playbackGainRef.current.gain.cancelScheduledValues(now);
-      playbackGainRef.current.gain.setValueAtTime(rvc ? 1.8 : 1.0, now);
-    }
-    if (monitorNodeRef.current) {
-      monitorNodeRef.current.port.postMessage({
-        ...monitorParamsRef.current,
-        enabled: !rvc,
-        pitch: rvc ? 0 : monitorParamsRef.current.pitch,
-      });
-    }
-  }, []);
+  const setListenMode = useCallback(
+    (mode) => {
+      listenModeRef.current = mode === 'rvc' || mode === 'server' ? 'rvc' : 'local';
+      applyOutputGains();
+    },
+    [applyOutputGains]
+  );
+
+  /** Mute/unmute speaker preview. Mic capture + voice send keep working. */
+  const setHearMyself = useCallback(
+    (on) => {
+      const next = Boolean(on);
+      hearMyselfRef.current = next;
+      setHearMyselfState(next);
+      applyOutputGains();
+    },
+    [applyOutputGains]
+  );
 
   const start = useCallback(
     async (inputDeviceId, outputDeviceId) => {
@@ -211,14 +237,6 @@ export default function useAudioPipeline(wsHook) {
         const recordDest = audioContext.createMediaStreamDestination();
         recordDestRef.current = recordDest;
 
-        // Default to DSP preview; App switches to 'rvc' when a module is active.
-        monitorGain.gain.value = 1.0;
-        playbackGain.gain.value = 1.0;
-        monitorNode.port.postMessage({
-          ...monitorParamsRef.current,
-          enabled: true,
-        });
-
         // Mic → gate → analyser / capture / wet monitor
         source.connect(gateNode);
         gateNode.connect(inputAnalyser);
@@ -237,6 +255,9 @@ export default function useAudioPipeline(wsHook) {
         limiter.connect(outputAnalyser);
         outputAnalyser.connect(audioContext.destination);
         limiter.connect(recordDest);
+
+        // DSP preview by default; App may switch to 'rvc'. Respect Hear myself.
+        applyOutputGains();
 
         // Reliable WAV capture of what you hear (after limiter).
         const recProc = audioContext.createScriptProcessor(4096, 1, 1);
@@ -290,7 +311,7 @@ export default function useAudioPipeline(wsHook) {
         throw err;
       }
     },
-    [wsHook, updateLevels]
+    [wsHook, updateLevels, applyOutputGains]
   );
 
   const finalizeRecording = useCallback(() => {
@@ -426,6 +447,8 @@ export default function useAudioPipeline(wsHook) {
     setMonitorParams,
     setGateParams,
     setListenMode,
+    hearMyself,
+    setHearMyself,
     gateOpen,
     gateLevelDb,
   };

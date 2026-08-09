@@ -51,7 +51,7 @@ export default function Recorder({ pipeline, onEnsureStarted, compact = false })
 
   const downloadRow = lastRecording ? (
     <div
-      className={`${compact ? 'mt-3' : 'mt-4'} rounded-2xl border border-white/[0.08] bg-black/25 p-3.5`}
+      className={`${compact ? 'mt-3' : 'mt-4'} rounded-2xl border border-[color:var(--line)] bg-[color:var(--surface-2)]/50 p-3.5`}
     >
       <div className="flex flex-wrap items-center justify-between gap-2">
         <p className="text-xs text-[color:var(--muted)]">

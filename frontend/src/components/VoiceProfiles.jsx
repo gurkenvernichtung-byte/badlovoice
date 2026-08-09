@@ -16,7 +16,7 @@ export default function VoiceProfiles({ activeId, onSelect, hasModel }) {
         <div>
           <p className="panel-kicker">Voices</p>
           <h2 className="panel-title">Pick a voice</h2>
-          <p className="mt-1 max-w-2xl text-sm text-zinc-500">
+          <p className="mt-1 max-w-2xl text-sm text-[color:var(--muted)]">
             Tap a preset, then Start. Works offline for pitch. Use Models for AI voices.
           </p>
         </div>
@@ -24,7 +24,7 @@ export default function VoiceProfiles({ activeId, onSelect, hasModel }) {
           className={`rounded-full border px-2.5 py-1 text-xs ${
             hasModel
               ? 'border-[#ff7a45]/40 text-[#ff9a6e]'
-              : 'border-white/10 text-zinc-500'
+              : 'border-[color:var(--line)] text-[color:var(--muted)]'
           }`}
         >
           {hasModel ? 'AI model on' : 'Pitch only'}
@@ -36,7 +36,7 @@ export default function VoiceProfiles({ activeId, onSelect, hasModel }) {
           const items = VOICE_PROFILES.filter((p) => p.group === group);
           return (
             <div key={group}>
-              <p className="mb-2 font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-zinc-500">
+              <p className="mb-2 font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-[color:var(--muted)]">
                 {group}
               </p>
               <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
@@ -51,13 +51,13 @@ export default function VoiceProfiles({ activeId, onSelect, hasModel }) {
                       className={`min-h-[3.25rem] rounded-2xl border px-3 py-3 text-left transition ${
                         on
                           ? 'border-[#ff7a45] bg-[#ff7a45]/15 text-[#f4f0ea]'
-                          : 'border-white/10 bg-black/25 text-zinc-300 hover:border-white/25 hover:text-zinc-100'
+                          : 'border-[color:var(--line)] bg-[color:var(--surface-2)]/70 text-[color:var(--ink-text)] hover:border-[color:var(--ink-text)]/25 hover:text-[color:var(--ink-text)]'
                       }`}
                     >
                       <span className="block text-base font-semibold tracking-tight">
                         {profile.name}
                       </span>
-                      <span className="mt-1 block text-xs text-zinc-500">{profile.blurb}</span>
+                      <span className="mt-1 block text-xs text-[color:var(--muted)]">{profile.blurb}</span>
                       <span className="mt-2 block font-mono text-[10px] text-[#7a9297]">
                         {shift.pitch > 0 ? '+' : ''}
                         {shift.pitch} st
