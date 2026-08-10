@@ -37,10 +37,20 @@ async function request(url, options = {}) {
   const text = await response.text();
   if (!text) return null;
 
+  const contentType = response.headers.get('content-type') || '';
+  // Vercel SPA rewrites can return index.html (200) for missing /api routes.
+  if (
+    contentType.includes('text/html') ||
+    text.trimStart().startsWith('<!DOCTYPE') ||
+    text.trimStart().startsWith('<html')
+  ) {
+    throw new ApiError('API unavailable (static host)', response.status, null);
+  }
+
   try {
     return JSON.parse(text);
   } catch {
-    return text;
+    throw new ApiError('API returned non-JSON', response.status, text.slice(0, 120));
   }
 }
 

@@ -21,10 +21,10 @@ export default function StreamExtras({
 
   useEffect(() => {
     fetchLatencyModes()
-      .then((m) => setModes(m || []))
+      .then((m) => setModes(Array.isArray(m) ? m : []))
       .catch(() => setModes([]));
     fetchProfiles()
-      .then((p) => setProfiles(p || []))
+      .then((p) => setProfiles(Array.isArray(p) ? p : []))
       .catch(() => setProfiles([]));
   }, []);
 

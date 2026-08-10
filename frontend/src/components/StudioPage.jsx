@@ -6,6 +6,7 @@ import Recorder from './Recorder';
 import StreamExtras from './StreamExtras';
 import BackgroundBlocker from './BackgroundBlocker';
 import PresetBar from './PresetBar';
+import ErrorBoundary from './ErrorBoundary';
 import {
   VOICE_PROFILES,
   pitchFromHost,
@@ -564,39 +565,41 @@ export default function StudioPage({
         </section>
       )}
 
-      {/* Advanced extras */}
+      {/* Advanced extras (server-backed panels are safe when API is offline) */}
       {isAdvanced && (
-        <div className="space-y-4">
-          <BackgroundBlocker
-            enabled={Boolean(extras.blockBackground)}
-            thresholdDb={Number(extras.vadThresholdDb) || -56}
-            gateOpen={pipeline.gateOpen}
-            levelDb={pipeline.gateLevelDb}
-            onChange={(partial) => {
-              onExtrasChange({
-                blockBackground: partial.enabled ?? extras.blockBackground,
-                vadThresholdDb: partial.thresholdDb ?? extras.vadThresholdDb,
-                vadEnabled: partial.enabled ?? extras.blockBackground,
-              });
-            }}
-          />
-          <StreamExtras
-            vadEnabled={extras.vadEnabled}
-            vadThresholdDb={extras.vadThresholdDb}
-            latencyMode={extras.latencyMode}
-            crossfadeMs={extras.crossfadeMs}
-            extraBufferChunks={extras.extraBufferChunks}
-            onChange={onExtrasChange}
-            onApplyLatencyMode={onApplyLatencyMode}
-            getSnapshot={getProfileSnapshot}
-            disabled={live}
-          />
-          <PresetBar
-            activePresetId={activePresetId}
-            onApplyPreset={applyPreset}
-            getCurrentSettings={getCurrentSettings}
-          />
-        </div>
+        <ErrorBoundary>
+          <div className="space-y-4">
+            <BackgroundBlocker
+              enabled={Boolean(extras?.blockBackground)}
+              thresholdDb={Number(extras?.vadThresholdDb) || -56}
+              gateOpen={pipeline.gateOpen}
+              levelDb={pipeline.gateLevelDb}
+              onChange={(partial) => {
+                onExtrasChange({
+                  blockBackground: partial.enabled ?? extras.blockBackground,
+                  vadThresholdDb: partial.thresholdDb ?? extras.vadThresholdDb,
+                  vadEnabled: partial.enabled ?? extras.blockBackground,
+                });
+              }}
+            />
+            <StreamExtras
+              vadEnabled={extras?.vadEnabled}
+              vadThresholdDb={extras?.vadThresholdDb}
+              latencyMode={extras?.latencyMode}
+              crossfadeMs={extras?.crossfadeMs ?? 8}
+              extraBufferChunks={extras?.extraBufferChunks ?? 1}
+              onChange={onExtrasChange}
+              onApplyLatencyMode={onApplyLatencyMode}
+              getSnapshot={getProfileSnapshot}
+              disabled={live}
+            />
+            <PresetBar
+              activePresetId={activePresetId}
+              onApplyPreset={applyPreset}
+              getCurrentSettings={getCurrentSettings}
+            />
+          </div>
+        </ErrorBoundary>
       )}
 
       {/* Bottom status bar */}
