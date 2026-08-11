@@ -1,0 +1,50 @@
+{
+  "expo": {
+    "name": "BadloVoice",
+    "slug": "badlovoice",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "scheme": "badlovoice",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#efe4d4"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.badlovoice.app",
+      "infoPlist": {
+        "NSMicrophoneUsageDescription": "BadloVoice needs the microphone to change your voice live.",
+        "NSCameraUsageDescription": "Camera is unused; required only if the web view requests it."
+      }
+    },
+    "android": {
+      "package": "com.badlovoice.expo",
+      "adaptiveIcon": {
+        "backgroundColor": "#FF8A3D",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "permissions": [
+        "android.permission.RECORD_AUDIO",
+        "android.permission.MODIFY_AUDIO_SETTINGS",
+        "android.permission.INTERNET"
+      ]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      [
+        "expo-av",
+        {
+          "microphonePermission": "Allow BadloVoice to use your microphone for live voice change."
+        }
+      ]
+    ]
+  }
+}
