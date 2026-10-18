@@ -13,12 +13,30 @@ function formatSize(bytes) {
 }
 
 /**
+ * Hands a take to the system share sheet (Files, WhatsApp, Mail, …).
+ * Returns 'shared' | 'cancelled' | 'unsupported'.
+ */
+async function shareTake(take) {
+  const file = new File([take.blob], take.name, { type: 'audio/wav' });
+  if (!navigator.share || !navigator.canShare?.({ files: [file] })) return 'unsupported';
+  try {
+    await navigator.share({ files: [file], title: take.name });
+    return 'shared';
+  } catch (err) {
+    if (err?.name === 'AbortError') return 'cancelled';
+    throw err;
+  }
+}
+
+/**
  * Records the mixed output (local pitch monitor + server return).
  * Requires Start first — Record alone does nothing on purpose.
+ * Every take stays in the list until deleted: Save, Send or Delete.
  */
 export default function Recorder({ pipeline, onEnsureStarted, compact = false }) {
-  const { isRunning, isRecording, recordSeconds, lastRecording } = pipeline;
+  const { isRunning, isRecording, recordSeconds, recordings = [] } = pipeline;
   const [hint, setHint] = useState(null);
+  const [confirmId, setConfirmId] = useState(null);
 
   const handleRecord = async () => {
     setHint(null);
@@ -40,43 +58,100 @@ export default function Recorder({ pipeline, onEnsureStarted, compact = false })
 
   const handleStop = () => {
     const result = pipeline.stopRecording();
+    const report = (rec) =>
+      setHint(rec ? 'Take saved to the list below.' : 'Empty take — talk longer, then try again.');
     if (result && typeof result.then === 'function') {
-      result.then((rec) => {
-        setHint(rec ? 'Saved — download below.' : 'Empty take — talk longer, then try again.');
-      });
+      result.then(report);
       return;
     }
-    setHint(result ? 'Saved — download below.' : 'Empty take — talk longer, then try again.');
+    report(result);
   };
 
-  const downloadRow = lastRecording ? (
-    <div
-      className={`${compact ? 'mt-3' : 'mt-4'} rounded-2xl border border-[color:var(--line)] bg-[color:var(--surface-2)]/50 p-3.5`}
-    >
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <p className="text-xs text-[color:var(--muted)]">
-          Last take · {formatDuration(lastRecording.seconds)} · {formatSize(lastRecording.size)}
-        </p>
-        <div className="flex items-center gap-2">
-          <a
-            href={lastRecording.url}
-            download={`badlovoice-${Date.now()}.wav`}
-            className="chip-button !normal-case min-h-10"
-          >
-            Download WAV
-          </a>
-          <button
-            type="button"
-            onClick={() => pipeline.discardRecording()}
-            className="chip-button min-h-10 !px-2.5"
-            aria-label="Discard recording"
-          >
-            Clear
-          </button>
-        </div>
-      </div>
-      <audio controls src={lastRecording.url} className="mt-3 h-9 w-full" />
-    </div>
+  const handleSave = (take) => {
+    // Browser download. In the Android app this may not save — use Send then.
+    const link = document.createElement('a');
+    link.href = take.url;
+    link.download = take.name;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    setHint('Download started. If nothing happens, use Send → Save to Files.');
+  };
+
+  const handleSend = async (take) => {
+    setHint(null);
+    try {
+      const outcome = await shareTake(take);
+      if (outcome === 'unsupported') {
+        setHint('Sending is not available on this device — use Save.');
+      }
+    } catch (err) {
+      setHint(err.message || 'Could not send the take');
+    }
+  };
+
+  const handleDelete = (id) => {
+    pipeline.deleteRecording(id);
+    setConfirmId(null);
+    setHint('Take deleted.');
+  };
+
+  const takes = recordings.length ? (
+    <ul className="mt-4 space-y-3">
+      {recordings.map((take, index) => (
+        <li
+          key={take.id}
+          className="rounded-2xl border border-[color:var(--line)] bg-[color:var(--surface-2)]/50 p-3.5"
+        >
+          <p className="text-xs text-[color:var(--muted)]">
+            Take {recordings.length - index} · {formatDuration(take.seconds)} · {formatSize(take.size)}
+          </p>
+          <audio controls src={take.url} className="mt-2 h-9 w-full" />
+          <div className="mt-3 flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              onClick={() => handleSave(take)}
+              className="chip-button !normal-case min-h-10"
+            >
+              Save
+            </button>
+            <button
+              type="button"
+              onClick={() => handleSend(take)}
+              className="chip-button !normal-case min-h-10"
+            >
+              Send
+            </button>
+            {confirmId === take.id ? (
+              <>
+                <button
+                  type="button"
+                  onClick={() => handleDelete(take.id)}
+                  className="btn-secondary-danger min-h-10"
+                >
+                  Confirm delete
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setConfirmId(null)}
+                  className="chip-button !normal-case min-h-10"
+                >
+                  Cancel
+                </button>
+              </>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setConfirmId(take.id)}
+                className="chip-button !normal-case min-h-10"
+              >
+                Delete
+              </button>
+            )}
+          </div>
+        </li>
+      ))}
+    </ul>
   ) : null;
 
   if (compact) {
@@ -105,7 +180,7 @@ export default function Recorder({ pipeline, onEnsureStarted, compact = false })
             {hint}
           </p>
         ) : null}
-        {downloadRow}
+        {takes}
       </section>
     );
   }
@@ -140,7 +215,7 @@ export default function Recorder({ pipeline, onEnsureStarted, compact = false })
         <li>
           Press <strong className="text-[color:var(--ink-text)]">Start</strong> (or Start + Record)
         </li>
-        <li>Talk, then Stop — download WAV here</li>
+        <li>Talk, then Stop — Save, Send or Delete each take below</li>
       </ol>
 
       {hint ? (
@@ -148,7 +223,7 @@ export default function Recorder({ pipeline, onEnsureStarted, compact = false })
           {hint}
         </p>
       ) : null}
-      {downloadRow}
+      {takes}
     </section>
   );
 }

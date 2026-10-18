@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
+const APP_NAME = 'Red Room Manager';
+
 const TABS = [
   { id: 'studio', label: 'Studio' },
   { id: 'models', label: 'Models' },
@@ -105,6 +107,10 @@ function LayoutToggle() {
     }
   }, [layout]);
 
+  // The phone app is always phone layout: keep the effects above (they set
+  // data-layout), but don't show a Desktop switch that cannot work there.
+  if (isNativeApp()) return null;
+
   const desktop = layout === 'desktop';
   return (
     <button
@@ -137,8 +143,10 @@ export default function Layout({
       <div className="grain" aria-hidden="true" />
       <div className="relative z-10 flex min-h-screen flex-col">
         <header className="sticky top-0 z-40 border-b border-[color:var(--line)] bg-[color:var(--surface)]/92 backdrop-blur-xl">
-          <div className="shell-header mx-auto flex w-full max-w-[1560px] flex-wrap items-center gap-3 pb-3">
-            <div className="flex min-w-0 items-center gap-2.5">
+          {/* Phone (portrait): row 1 brand + actions, row 2 tabs, row 3 modes — all visible.
+              Wide screens (sm+): one row, as before. */}
+          <div className="shell-header mx-auto flex w-full max-w-[1560px] flex-wrap items-center gap-x-3 gap-y-2.5 pb-3">
+            <div className="order-1 flex min-w-0 items-center gap-2.5">
               <img
                 src="/brand-mark-app.png"
                 alt=""
@@ -149,7 +157,7 @@ export default function Layout({
               />
               <div className="min-w-0 leading-tight">
                 <p className="font-display truncate text-xl font-bold tracking-[-0.03em]">
-                  BadloVoice
+                  {APP_NAME}
                 </p>
                 <p className="truncate text-xs text-[color:var(--muted)]">
                   Voice studio
@@ -157,28 +165,7 @@ export default function Layout({
               </div>
             </div>
 
-            <nav className="flex min-w-0 flex-1 justify-center gap-1">
-              {TABS.map((item) => {
-                const selected = tab === item.id;
-                return (
-                  <button
-                    key={item.id}
-                    type="button"
-                    onClick={() => onTabChange?.(item.id)}
-                    aria-current={selected ? 'page' : undefined}
-                    className={`min-h-10 rounded-xl px-3.5 text-sm font-semibold transition ${
-                      selected
-                        ? 'bg-[color:var(--accent)]/15 text-[color:var(--accent-soft)]'
-                        : 'text-[color:var(--muted)] hover:bg-[color:var(--surface-2)]/60 hover:text-[color:var(--ink-text)]'
-                    }`}
-                  >
-                    {item.label}
-                  </button>
-                );
-              })}
-            </nav>
-
-            <div className="flex shrink-0 flex-wrap items-center justify-end gap-2">
+            <div className="order-2 ml-auto flex shrink-0 flex-wrap items-center justify-end gap-2 sm:order-4">
               <span
                 className={`status-pill ${isLive ? 'status-pill-live' : 'status-pill-off'}`}
               >
@@ -190,28 +177,50 @@ export default function Layout({
                 {isLive ? 'LIVE' : 'Idle'}
               </span>
               {statusSlot}
-              {onDensityChange && (
-                <div className="flex rounded-xl border border-[color:var(--line)] p-0.5">
-                  {MODES.map((m) => (
-                    <button
-                      key={m.id}
-                      type="button"
-                      onClick={() => onDensityChange(m.id)}
-                      className={`min-h-9 rounded-lg px-2.5 text-xs font-semibold transition ${
-                        density === m.id
-                          ? 'bg-[color:var(--accent)]/15 text-[color:var(--accent-soft)]'
-                          : 'text-[color:var(--muted)] hover:text-[color:var(--ink-text)]'
-                      }`}
-                    >
-                      {m.label}
-                    </button>
-                  ))}
-                </div>
-              )}
               <LayoutToggle />
               <ThemeToggle />
               {headerActions}
             </div>
+
+            <nav className="order-3 flex w-full min-w-0 gap-1 sm:order-2 sm:w-auto sm:flex-1 sm:justify-center">
+              {TABS.map((item) => {
+                const selected = tab === item.id;
+                return (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onClick={() => onTabChange?.(item.id)}
+                    aria-current={selected ? 'page' : undefined}
+                    className={`min-h-10 flex-1 rounded-xl px-3.5 text-sm font-semibold transition sm:flex-none ${
+                      selected
+                        ? 'bg-[color:var(--accent)]/15 text-[color:var(--accent-soft)]'
+                        : 'text-[color:var(--muted)] hover:bg-[color:var(--surface-2)]/60 hover:text-[color:var(--ink-text)]'
+                    }`}
+                  >
+                    {item.label}
+                  </button>
+                );
+              })}
+            </nav>
+
+            {onDensityChange && (
+              <div className="order-4 flex w-full rounded-xl border border-[color:var(--line)] p-0.5 sm:order-3 sm:w-auto">
+                {MODES.map((m) => (
+                  <button
+                    key={m.id}
+                    type="button"
+                    onClick={() => onDensityChange(m.id)}
+                    className={`min-h-9 flex-1 rounded-lg px-2.5 text-xs font-semibold transition sm:flex-none ${
+                      density === m.id
+                        ? 'bg-[color:var(--accent)]/15 text-[color:var(--accent-soft)]'
+                        : 'text-[color:var(--muted)] hover:text-[color:var(--ink-text)]'
+                    }`}
+                  >
+                    {m.label}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         </header>
 
@@ -223,7 +232,7 @@ export default function Layout({
 
         <footer className="shell-footer border-t border-[color:var(--line)] pt-3">
           <p className="mx-auto w-full max-w-[1560px] text-center text-xs text-[color:var(--muted)] sm:text-left">
-            BadloVoice
+            {APP_NAME}
             <span className="mx-1.5 text-[color:var(--ink-text)]/25" aria-hidden="true">
               ·
             </span>

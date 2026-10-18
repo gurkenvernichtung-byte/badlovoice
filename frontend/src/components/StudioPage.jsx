@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import Visualizer from './Visualizer';
 import VoiceLab from './VoiceLab';
 import EffectsRack from './EffectsRack';
@@ -26,7 +26,6 @@ const QUICK_PRESETS = [
 ];
 
 const RECENT_KEY = 'badlovoice_recent_voices';
-const HEAR_KEY = 'badlovoice_hear_myself';
 
 function readRecent() {
   try {
@@ -121,31 +120,8 @@ export default function StudioPage({
   const [error, setError] = useState(null);
   const [showAdvancedFx, setShowAdvancedFx] = useState(density === 'advanced');
   const [quickId, setQuickId] = useState(null);
-  const [hearMyself, setHearMyself] = useState(() => {
-    try {
-      return localStorage.getItem(HEAR_KEY) === '1';
-    } catch {
-      return false;
-    }
-  });
-
   const isSimple = density === 'simple';
   const isAdvanced = density === 'advanced';
-
-  useEffect(() => {
-    pipeline.setHearMyself?.(hearMyself);
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- sync saved preference once on mount
-  }, []);
-
-  const handleHearMyself = (on) => {
-    setHearMyself(on);
-    pipeline.setHearMyself?.(on);
-    try {
-      localStorage.setItem(HEAR_KEY, on ? '1' : '0');
-    } catch {
-      // ignore
-    }
-  };
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -390,25 +366,6 @@ export default function StudioPage({
               />
             </div>
           </div>
-
-          <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-[color:var(--line)] bg-[color:var(--surface)] px-3 py-2.5">
-            <input
-              type="checkbox"
-              className="mt-1 h-4 w-4 accent-[color:var(--accent)]"
-              checked={hearMyself}
-              onChange={(e) => handleHearMyself(e.target.checked)}
-            />
-            <span className="min-w-0">
-              <span className="block text-sm font-semibold text-[color:var(--ink-text)]">
-                Hear myself
-              </span>
-              <span className="mt-0.5 block text-xs text-[color:var(--muted)]">
-                {hearMyself
-                  ? 'Playing changed voice on your speaker — use headphones to avoid echo.'
-                  : 'Speaker preview off. Best for Discord/calls on speakers; voice still runs.'}
-              </span>
-            </span>
-          </label>
 
           {error && (
             <div

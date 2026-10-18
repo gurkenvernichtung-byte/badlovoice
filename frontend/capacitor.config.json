@@ -1,6 +1,6 @@
 {
   "appId": "com.badlovoice.app",
-  "appName": "BadloVoice",
+  "appName": "Red Room Manager",
   "webDir": "dist",
   "server": {
     "androidScheme": "https"

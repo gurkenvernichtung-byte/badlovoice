@@ -8,7 +8,8 @@ export default function useAudioPipeline(wsHook) {
   const [outputLevel, setOutputLevel] = useState(0);
   const [isRecording, setIsRecording] = useState(false);
   const [recordSeconds, setRecordSeconds] = useState(0);
-  const [lastRecording, setLastRecording] = useState(null);
+  const [recordings, setRecordings] = useState([]);
+  const recordIdRef = useRef(0);
   const [gateOpen, setGateOpen] = useState(false);
   const [gateLevelDb, setGateLevelDb] = useState(-80);
 
@@ -324,26 +325,26 @@ export default function useAudioPipeline(wsHook) {
     recordSamplesRef.current = 0;
     setRecordSeconds(0);
 
+    // Too short / empty: nothing to keep.
     if (!chunks.length || samples < 800) {
-      setLastRecording((prev) => {
-        if (prev?.url) URL.revokeObjectURL(prev.url);
-        return null;
-      });
       return null;
     }
 
     const blob = encodeWav(chunks, sampleRateRef.current);
+    recordIdRef.current += 1;
+    const stamp = new Date().toISOString().replace(/[:.]/g, '-');
     const recording = {
+      id: `take-${recordIdRef.current}`,
       url: URL.createObjectURL(blob),
+      blob,
+      name: `badlovoice-${stamp}.wav`,
       seconds: samples / sampleRateRef.current,
       size: blob.size,
       mime: 'audio/wav',
       ext: 'wav',
     };
-    setLastRecording((prev) => {
-      if (prev?.url) URL.revokeObjectURL(prev.url);
-      return recording;
-    });
+    // Newest first; older takes stay until the user deletes them.
+    setRecordings((prev) => [recording, ...prev]);
     return recording;
   }, []);
 
@@ -361,10 +362,18 @@ export default function useAudioPipeline(wsHook) {
 
   const stopRecording = useCallback(() => finalizeRecording(), [finalizeRecording]);
 
+  const deleteRecording = useCallback((id) => {
+    setRecordings((prev) => {
+      const target = prev.find((r) => r.id === id);
+      if (target?.url) URL.revokeObjectURL(target.url);
+      return prev.filter((r) => r.id !== id);
+    });
+  }, []);
+
   const discardRecording = useCallback(() => {
-    setLastRecording((prev) => {
-      if (prev?.url) URL.revokeObjectURL(prev.url);
-      return null;
+    setRecordings((prev) => {
+      prev.forEach((r) => r.url && URL.revokeObjectURL(r.url));
+      return [];
     });
   }, []);
 
@@ -440,10 +449,12 @@ export default function useAudioPipeline(wsHook) {
     getAnalysers,
     isRecording,
     recordSeconds,
-    lastRecording,
+    recordings,
+    lastRecording: recordings[0] ?? null,
     startRecording,
     stopRecording,
     discardRecording,
+    deleteRecording,
     setMonitorParams,
     setGateParams,
     setListenMode,
