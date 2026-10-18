@@ -11,7 +11,6 @@ import android.content.pm.ServiceInfo;
 import android.os.Build;
 import android.os.IBinder;
 
-import androidx.core.app.NotificationCompat;
 
 /**
  * Foreground service (type: microphone) that keeps the voice changer alive while
@@ -86,15 +85,21 @@ public class BackgroundAudioService extends Service {
             contentIntent = PendingIntent.getActivity(
                     this, 0, launch, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
         }
-        return new NotificationCompat.Builder(this, CHANNEL_ID)
-                .setContentTitle(getString(R.string.app_name))
+        Notification.Builder builder;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            builder = new Notification.Builder(this, CHANNEL_ID);
+        } else {
+            // minSdk 24: pre-channel devices. Deprecated constructor is the only option there.
+            builder = new Notification.Builder(this);
+        }
+        builder.setContentTitle(getString(R.string.app_name))
                 .setContentText("Voice changer is running")
                 .setSmallIcon(android.R.drawable.ic_btn_speak_now)
                 .setOngoing(true)
-                .setSilent(true)
-                .setContentIntent(contentIntent)
-                .setPriority(NotificationCompat.PRIORITY_LOW)
-                .setCategory(NotificationCompat.CATEGORY_SERVICE)
-                .build();
+                .setContentIntent(contentIntent);
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            builder.setPriority(Notification.PRIORITY_LOW);
+        }
+        return builder.build();
     }
 }
