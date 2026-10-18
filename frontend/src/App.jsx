@@ -459,8 +459,8 @@ export default function App() {
     <button
       onClick={() => setIsSettingsOpen(true)}
       className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-[color:var(--line)] bg-[color:var(--surface)] text-[color:var(--muted)] transition hover:border-[color:var(--ink-text)]/20 hover:text-[color:var(--ink-text)]"
-      title="Session settings"
-      aria-label="Open settings"
+      title="Sitzungseinstellungen"
+      aria-label="Einstellungen öffnen"
     >
       <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
         <circle cx="12" cy="12" r="3" />
@@ -518,33 +518,33 @@ export default function App() {
         <div className="mx-auto max-w-4xl space-y-4 animate-fade-in-up pb-8">
           <header className="panel p-5">
             <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[color:var(--muted)]">
-              Models
+              Modelle
             </p>
             <h1 className="mt-1 font-display text-2xl font-bold tracking-tight">
-              Voice model manager
+              Stimmmodell-Verwaltung
             </h1>
             <p className="mt-1 max-w-2xl text-sm text-[color:var(--muted)]">
-              Load RVC (.pth) or ONNX voices, activate one for live conversion, then return to Studio and Start.
+              RVC-(.pth)- oder ONNX-Stimmen laden, eine für die Live-Umwandlung aktivieren, dann zurück zum Studio und Start.
             </p>
             <div className="mt-4 flex flex-wrap gap-3 text-sm">
               <div className="rounded-xl border border-[color:var(--line)] bg-[color:var(--surface)] px-3 py-2">
-                <p className="text-[10px] uppercase tracking-[0.12em] text-[color:var(--muted)]">Active</p>
-                <p className="font-semibold">{activeModel || 'None · DSP pitch only'}</p>
+                <p className="text-[10px] uppercase tracking-[0.12em] text-[color:var(--muted)]">Aktiv</p>
+                <p className="font-semibold">{activeModel || 'Keins · nur DSP-Tonhöhe'}</p>
               </div>
               <div className="rounded-xl border border-[color:var(--line)] bg-[color:var(--surface)] px-3 py-2">
                 <p className="text-[10px] uppercase tracking-[0.12em] text-[color:var(--muted)]">Torch</p>
                 <p className="font-semibold">
-                  {runtimeConfig.runtime?.torch?.available ? 'Ready' : 'Unavailable'}
+                  {runtimeConfig.runtime?.torch?.available ? 'Bereit' : 'Nicht verfügbar'}
                 </p>
               </div>
               <div className="rounded-xl border border-[color:var(--line)] bg-[color:var(--surface)] px-3 py-2">
                 <p className="text-[10px] uppercase tracking-[0.12em] text-[color:var(--muted)]">ONNX</p>
                 <p className="font-semibold">
-                  {runtimeConfig.runtime?.onnx?.available ? 'Ready' : 'Unavailable'}
+                  {runtimeConfig.runtime?.onnx?.available ? 'Bereit' : 'Nicht verfügbar'}
                 </p>
               </div>
               <div className="rounded-xl border border-[color:var(--line)] bg-[color:var(--surface)] px-3 py-2">
-                <p className="text-[10px] uppercase tracking-[0.12em] text-[color:var(--muted)]">Sample rate</p>
+                <p className="text-[10px] uppercase tracking-[0.12em] text-[color:var(--muted)]">Abtastrate</p>
                 <p className="font-semibold">{runtimeConfig.sampleRate} Hz</p>
               </div>
             </div>
@@ -569,13 +569,13 @@ export default function App() {
         <div className="mx-auto max-w-3xl animate-fade-in-up pb-8">
           <header className="mb-4 panel p-5">
             <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[color:var(--muted)]">
-              Converter
+              Konverter
             </p>
             <h1 className="mt-1 font-display text-2xl font-bold tracking-tight">
-              Offline file conversion
+              Offline-Dateikonvertierung
             </h1>
             <p className="mt-1 text-sm text-[color:var(--muted)]">
-              Uses your current Studio pitch, formant, effects, and active model.
+              Nutzt deine aktuelle Studio-Tonhöhe, Formant, Effekte und das aktive Modell.
             </p>
           </header>
           <FileConverter
@@ -591,7 +591,7 @@ export default function App() {
           <button
             className="absolute inset-0 bg-black/72 backdrop-blur-md"
             onClick={() => setIsSettingsOpen(false)}
-            aria-label="Close settings modal"
+            aria-label="Einstellungen schließen"
           />
           <div className="relative max-h-[calc(100svh-2.5rem)] w-full max-w-5xl overflow-y-auto">
             <GlobalSettings

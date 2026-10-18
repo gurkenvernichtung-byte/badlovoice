@@ -21,7 +21,7 @@ function PresetChip({ preset, active, onApply, onDelete }) {
             event.stopPropagation();
             onDelete(preset);
           }}
-          title="Delete preset"
+          title="Preset löschen"
           className="absolute -right-1.5 -top-1.5 hidden h-4 w-4 items-center justify-center rounded-sm border border-rose-300/40 bg-[#18090d] text-[9px] text-[color:var(--danger-soft)] group-hover:flex"
         >
           ✕
@@ -47,7 +47,7 @@ export default function PresetBar({ activePresetId, onApplyPreset, getCurrentSet
       });
       setError(null);
     } catch {
-      setError('Preset service unavailable');
+      setError('Preset-Dienst nicht erreichbar');
     }
   }, []);
 
@@ -66,7 +66,7 @@ export default function PresetBar({ activePresetId, onApplyPreset, getCurrentSet
       setShowSave(false);
       await load();
     } catch (err) {
-      setError(err.message || 'Failed to save preset');
+      setError(err.message || 'Preset konnte nicht gespeichert werden');
     } finally {
       setSaving(false);
     }
@@ -77,7 +77,7 @@ export default function PresetBar({ activePresetId, onApplyPreset, getCurrentSet
       await deletePreset(preset.id);
       await load();
     } catch (err) {
-      setError(err.message || 'Failed to delete preset');
+      setError(err.message || 'Preset konnte nicht gelöscht werden');
     }
   };
 
@@ -85,8 +85,8 @@ export default function PresetBar({ activePresetId, onApplyPreset, getCurrentSet
     <section id="presets" className="panel scroll-mt-20 p-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <p className="panel-kicker">Extra presets</p>
-          <h2 className="panel-title">FX & saved</h2>
+          <p className="panel-kicker">Weitere Presets</p>
+          <h2 className="panel-title">Effekte & gespeichert</h2>
         </div>
 
         <div className="flex items-center gap-2">
@@ -99,13 +99,13 @@ export default function PresetBar({ activePresetId, onApplyPreset, getCurrentSet
                   if (event.key === 'Enter') handleSave();
                   if (event.key === 'Escape') setShowSave(false);
                 }}
-                placeholder="Preset name"
+                placeholder="Preset-Name"
                 maxLength={40}
                 autoFocus
                 className="w-40 rounded border border-[color:var(--ink-text)]/20 bg-[color:var(--surface-2)] px-3 py-1.5 text-sm text-[color:var(--ink-text)] outline-none placeholder:text-[color:var(--muted)] focus:border-[color:var(--ink-text)]/35"
               />
               <button onClick={handleSave} disabled={saving || !saveName.trim()} className="chip-button">
-                {saving ? '...' : 'Save'}
+                {saving ? '...' : 'Speichern'}
               </button>
               <button onClick={() => setShowSave(false)} className="chip-button !px-2.5">
                 ✕
@@ -113,7 +113,7 @@ export default function PresetBar({ activePresetId, onApplyPreset, getCurrentSet
             </div>
           ) : (
             <button onClick={() => setShowSave(true)} className="chip-button">
-              + Save current
+              + Aktuelle speichern
             </button>
           )}
         </div>

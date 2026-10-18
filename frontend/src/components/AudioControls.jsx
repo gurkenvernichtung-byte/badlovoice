@@ -16,7 +16,7 @@ export default function AudioControls({ devices, pipeline, wsStatus, activeModel
       await devices.refresh?.();
       await pipeline.start(selectedInput || undefined, selectedOutput || undefined);
     } catch (err) {
-      setError(err.message || 'Could not start. Allow the mic, then try again.');
+      setError(err.message || 'Start nicht möglich. Mikrofon erlauben und erneut versuchen.');
     } finally {
       setStarting(false);
     }
@@ -32,11 +32,11 @@ export default function AudioControls({ devices, pipeline, wsStatus, activeModel
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <p className="panel-kicker">Audio</p>
-          <h2 className="panel-title">Mic, speaker & Start</h2>
+          <h2 className="panel-title">Mikro, Lautsprecher & Start</h2>
         </div>
         <div className="flex items-center gap-2">
           <span className="rounded border border-[color:var(--line)] bg-[color:var(--surface)] px-2 py-1 text-xs text-[color:var(--muted)]">
-            {activeModel ? 'AI model' : 'Pitch only'}
+            {activeModel ? 'KI-Modell' : 'Nur Tonhöhe'}
           </span>
           <button
             type="button"
@@ -44,41 +44,41 @@ export default function AudioControls({ devices, pipeline, wsStatus, activeModel
             disabled={pipeline.isRunning || devices.isRefreshing}
             className="chip-button min-h-10"
           >
-            {devices.isRefreshing ? 'Refreshing…' : 'Refresh'}
+            {devices.isRefreshing ? 'Aktualisiert…' : 'Aktualisieren'}
           </button>
         </div>
       </div>
 
       <div className="mt-4 grid gap-4 sm:grid-cols-2">
         <div>
-          <label className="block text-xs text-[color:var(--muted)]">Microphone</label>
+          <label className="block text-xs text-[color:var(--muted)]">Mikrofon</label>
           <select
             value={selectedInput}
             onChange={(event) => setSelectedInput(event.target.value)}
             disabled={pipeline.isRunning}
             className="native-select-safe mt-2 min-h-11 w-full rounded-md border border-[color:var(--line)] bg-[color:var(--surface-2)]/70 px-3 py-2.5 text-sm text-[color:var(--ink-text)] outline-none transition focus:border-[color:var(--ink-text)]/30 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            <option value="">Default microphone</option>
+            <option value="">Standard-Mikrofon</option>
             {devices.inputDevices.map((device) => (
               <option key={device.deviceId} value={device.deviceId}>
-                {device.label || `Microphone (${device.deviceId.slice(0, 8)}...)`}
+                {device.label || `Mikrofon (${device.deviceId.slice(0, 8)}...)`}
               </option>
             ))}
           </select>
         </div>
 
         <div>
-          <label className="block text-xs text-[color:var(--muted)]">Speaker</label>
+          <label className="block text-xs text-[color:var(--muted)]">Lautsprecher</label>
           <select
             value={selectedOutput}
             onChange={(event) => setSelectedOutput(event.target.value)}
             disabled={pipeline.isRunning}
             className="native-select-safe mt-2 min-h-11 w-full rounded-md border border-[color:var(--line)] bg-[color:var(--surface-2)]/70 px-3 py-2.5 text-sm text-[color:var(--ink-text)] outline-none transition focus:border-[color:var(--ink-text)]/30 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            <option value="">Default speaker</option>
+            <option value="">Standard-Lautsprecher</option>
             {devices.outputDevices.map((device) => (
               <option key={device.deviceId} value={device.deviceId}>
-                {device.label || `Speaker (${device.deviceId.slice(0, 8)}...)`}
+                {device.label || `Lautsprecher (${device.deviceId.slice(0, 8)}...)`}
               </option>
             ))}
           </select>
@@ -87,19 +87,19 @@ export default function AudioControls({ devices, pipeline, wsStatus, activeModel
 
       {!devices.hasLabels && (
         <p className="mt-2 text-xs text-[color:var(--muted)]">
-          Allow microphone access to see device names.
+          Mikrofonzugriff erlauben, um Gerätenamen zu sehen.
         </p>
       )}
       {devices.permissionState === 'denied' && (
         <p className="mt-2 text-xs text-[color:var(--danger)]">
-          Microphone permission is blocked. Allow it, then tap Start.
+          Mikrofonzugriff ist blockiert. Erlauben, dann Start tippen.
         </p>
       )}
 
       <p className="mt-4 rounded border border-[#6ee7b7]/25 bg-[#6ee7b7]/5 px-3 py-2 text-sm text-[#c5d5d8]">
         {pipeline.isRunning
-          ? 'Live — use headphones so you hear the changed voice, not your room echo.'
-          : '1) Wear headphones  2) Tap Start  3) Talk'}
+          ? 'Live — Kopfhörer benutzen, damit du die veränderte Stimme hörst, nicht dein Raumecho.'
+          : '1) Kopfhörer aufsetzen  2) Start tippen  3) Sprechen'}
       </p>
 
       <div className="mt-5">
@@ -110,34 +110,34 @@ export default function AudioControls({ devices, pipeline, wsStatus, activeModel
             disabled={!canStart || starting}
             className="btn-primary"
           >
-            {starting ? 'Starting…' : 'Start'}
+            {starting ? 'Startet…' : 'Start'}
           </button>
         ) : (
           <button type="button" onClick={handleStop} className="btn-stop">
-            Stop
+            Stopp
           </button>
         )}
       </div>
 
       {!pipeline.isRunning && wsStatus !== 'connected' && (
         <p className="mt-3 text-xs text-[color:var(--muted)]">
-          Server offline — pitch still works after Start. Connect for AI models.
+          Server offline — Tonhöhe funktioniert nach Start trotzdem. Für KI-Modelle verbinden.
         </p>
       )}
       {!pipeline.isRunning && wsStatus === 'connected' && !activeModel && (
         <p className="mt-3 text-xs text-[color:var(--muted)]">
-          No AI model loaded — Start uses pitch presets. Open Models to activate one.
+          Kein KI-Modell geladen — Start nutzt Tonhöhen-Presets. Unter Modelle eines aktivieren.
         </p>
       )}
       {pipeline.isRunning && !activeModel && (
         <p className="mt-3 text-xs text-[#6ee7b7]">
-          Pitch live. For AI voice: Models → Activate → Start again.
+          Tonhöhe läuft. Für KI-Stimme: Modelle → Aktivieren → erneut Start.
         </p>
       )}
       {pipeline.isRunning && activeModel && (
         <p className="mt-3 text-xs text-[#e09a55]">
-          AI model: <span className="font-mono text-[#6ee7b7]">{activeModel}</span>
-          {' '}— keep talking; CPU may lag a few seconds.
+          KI-Modell: <span className="font-mono text-[#6ee7b7]">{activeModel}</span>
+          {' '}— weitersprechen; die CPU kann einige Sekunden hinterherhinken.
         </p>
       )}
 

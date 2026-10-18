@@ -15,14 +15,15 @@ import {
 import { defaultEffects } from '../lib/effects';
 
 const GROUPS = ['Adult', 'Teen', 'Child', 'Fun'];
+const GROUP_LABELS = { Adult: 'Erwachsen', Teen: 'Teen', Child: 'Kind', Fun: 'Spaß' };
 
 const QUICK_PRESETS = [
-  { id: 'natural', label: 'Natural', kind: 'natural' },
-  { id: 'deep', label: 'Deep', kind: 'profile', profileId: 'deep' },
+  { id: 'natural', label: 'Natürlich', kind: 'natural' },
+  { id: 'deep', label: 'Tief', kind: 'profile', profileId: 'deep' },
   { id: 'radio', label: 'Radio', kind: 'profile', profileId: 'radio' },
-  { id: 'robot', label: 'Robot', kind: 'profile', profileId: 'robot' },
+  { id: 'robot', label: 'Roboter', kind: 'profile', profileId: 'robot' },
   { id: 'monster', label: 'Monster', kind: 'profile', profileId: 'monster' },
-  { id: 'telephone', label: 'Telephone', kind: 'effect', effectKey: 'telephone' },
+  { id: 'telephone', label: 'Telefon', kind: 'effect', effectKey: 'telephone' },
 ];
 
 const RECENT_KEY = 'badlovoice_recent_voices';
@@ -154,7 +155,7 @@ export default function StudioPage({
       await devices.refresh?.();
       await pipeline.start(selectedInput || undefined, selectedOutput || undefined);
     } catch (err) {
-      setError(err.message || 'Could not start. Allow the mic, then try again.');
+      setError(err.message || 'Start nicht möglich. Mikrofon erlauben und erneut versuchen.');
     } finally {
       setStarting(false);
     }
@@ -211,13 +212,13 @@ export default function StudioPage({
         <aside className="panel flex max-h-[70vh] flex-col overflow-hidden p-3 xl:max-h-[calc(100svh-11rem)] order-3 lg:order-1">
           <div className="mb-3">
             <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[color:var(--muted)]">
-              Voice library
+              Stimmenbibliothek
             </p>
             <input
               type="search"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search voices"
+              placeholder="Stimmen suchen"
               className="mt-2 min-h-10 w-full rounded-xl border border-[color:var(--line)] bg-[color:var(--surface)] px-3 text-sm outline-none focus-visible:border-[color:var(--accent)]/50"
             />
             <div className="mt-2 flex flex-wrap gap-1.5">
@@ -232,7 +233,7 @@ export default function StudioPage({
                       : 'bg-[color:var(--surface-2)]/50 text-[color:var(--muted)] hover:text-[color:var(--ink-text)]'
                   }`}
                 >
-                  {g}
+                  {GROUP_LABELS[g] || g}
                 </button>
               ))}
             </div>
@@ -241,7 +242,7 @@ export default function StudioPage({
           {!isSimple && recentProfiles.length > 0 && (
             <div className="mb-3 border-b border-[color:var(--line)] pb-3">
               <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-[color:var(--muted)]">
-                Recent
+                Zuletzt
               </p>
               <div className="flex flex-wrap gap-1.5">
                 {recentProfiles.map((p) => (
@@ -277,7 +278,7 @@ export default function StudioPage({
             })}
             {filtered.length === 0 && (
               <p className="px-1 py-6 text-center text-sm text-[color:var(--muted)]">
-                No voices match.
+                Keine Stimmen gefunden.
               </p>
             )}
           </div>
@@ -292,7 +293,7 @@ export default function StudioPage({
                   Live
                 </p>
                 <h2 className="font-display text-lg font-bold tracking-tight">
-                  {live ? 'Transforming' : 'Voice stage'}
+                  {live ? 'Wandelt um' : 'Stimmbühne'}
                 </h2>
               </div>
               <div
@@ -303,7 +304,7 @@ export default function StudioPage({
                     live ? 'bg-[color:var(--accent)] rec-blink' : 'bg-[color:var(--ink-text)]/25'
                   }`}
                 />
-                {live ? 'LIVE' : 'Ready'}
+                {live ? 'LIVE' : 'Bereit'}
               </div>
             </div>
 
@@ -316,10 +317,10 @@ export default function StudioPage({
               {!live && (
                 <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center px-6 text-center">
                   <p className="font-display text-xl font-bold tracking-tight text-[color:var(--ink-text)] sm:text-2xl">
-                    Ready to transform your voice
+                    Bereit, deine Stimme zu verwandeln
                   </p>
                   <p className="mt-2 max-w-sm text-sm text-[color:var(--muted)]">
-                    Select a voice and press Start
+                    Wähle eine Stimme und drücke Start
                   </p>
                 </div>
               )}
@@ -327,10 +328,10 @@ export default function StudioPage({
 
             {live && (
               <div className="mt-3 flex gap-4">
-                <LevelMeter label="Input" value={pipeline.inputLevel} />
-                <LevelMeter label="Output" value={pipeline.outputLevel} tone="out" />
+                <LevelMeter label="Eingang" value={pipeline.inputLevel} />
+                <LevelMeter label="Ausgang" value={pipeline.outputLevel} tone="out" />
                 <div className="shrink-0 text-right">
-                  <p className="text-[11px] text-[color:var(--muted)]">Latency</p>
+                  <p className="text-[11px] text-[color:var(--muted)]">Latenz</p>
                   <p className="font-mono text-sm font-semibold tabular-nums">
                     {latency > 0 ? `${Math.round(latency)} ms` : '—'}
                   </p>
@@ -347,11 +348,11 @@ export default function StudioPage({
                 disabled={starting}
                 className="btn-primary text-base tracking-wide"
               >
-                {starting ? 'Starting…' : '🎙  Start voice'}
+                {starting ? 'Startet…' : '🎙  Stimme starten'}
               </button>
             ) : (
               <button type="button" onClick={handleStop} className="btn-stop text-base tracking-wide">
-                ●  Stop
+                ●  Stopp
               </button>
             )}
             <div className="sm:min-w-[220px] sm:flex-1">
@@ -390,7 +391,7 @@ export default function StudioPage({
           {!isSimple && (
             <div className="panel p-3">
               <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[color:var(--muted)]">
-                Devices
+                Geräte
               </p>
               <div className="mt-2 space-y-2">
                 <select
@@ -399,10 +400,10 @@ export default function StudioPage({
                   disabled={live}
                   className="native-select-safe min-h-10 w-full rounded-xl border border-[color:var(--line)] bg-[color:var(--surface)] px-3 text-sm disabled:opacity-50"
                 >
-                  <option value="">Default microphone</option>
+                  <option value="">Standard-Mikrofon</option>
                   {devices.inputDevices.map((d) => (
                     <option key={d.deviceId} value={d.deviceId}>
-                      {d.label || `Mic (${d.deviceId.slice(0, 8)}…)`}
+                      {d.label || `Mikrofon (${d.deviceId.slice(0, 8)}…)`}
                     </option>
                   ))}
                 </select>
@@ -412,10 +413,10 @@ export default function StudioPage({
                   disabled={live}
                   className="native-select-safe min-h-10 w-full rounded-xl border border-[color:var(--line)] bg-[color:var(--surface)] px-3 text-sm disabled:opacity-50"
                 >
-                  <option value="">Default speaker</option>
+                  <option value="">Standard-Lautsprecher</option>
                   {devices.outputDevices.map((d) => (
                     <option key={d.deviceId} value={d.deviceId}>
-                      {d.label || `Speaker (${d.deviceId.slice(0, 8)}…)`}
+                      {d.label || `Lautsprecher (${d.deviceId.slice(0, 8)}…)`}
                     </option>
                   ))}
                 </select>
@@ -430,7 +431,7 @@ export default function StudioPage({
         <section className="panel p-3">
           <div className="mb-2 flex items-center justify-between gap-2">
             <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[color:var(--muted)]">
-              Quick presets
+              Schnellvorwahl
             </p>
           </div>
           <div className="flex gap-2 overflow-x-auto pb-1">
@@ -458,10 +459,10 @@ export default function StudioPage({
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div>
               <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[color:var(--muted)]">
-                Effects
+                Effekte
               </p>
               <p className="mt-0.5 text-sm text-[color:var(--muted)]">
-                Core chain — open advanced for the full DSP rack
+                Grundkette — für das volle DSP-Rack „Erweitert“ öffnen
               </p>
             </div>
             <button
@@ -470,15 +471,15 @@ export default function StudioPage({
               className="chip-button"
               aria-expanded={showAdvancedFx}
             >
-              {showAdvancedFx ? 'Hide advanced' : 'Advanced effects →'}
+              {showAdvancedFx ? 'Erweitert ausblenden' : 'Erweiterte Effekte →'}
             </button>
           </div>
 
           <div className="mt-3 flex flex-wrap gap-2">
             {[
-              { key: 'gate', label: 'Noise Gate', viaExtras: true },
-              { key: 'eq', label: 'Tone EQ' },
-              { key: 'compressor', label: 'Compressor' },
+              { key: 'gate', label: 'Rauschgate', viaExtras: true },
+              { key: 'eq', label: 'Klang-EQ' },
+              { key: 'compressor', label: 'Kompressor' },
             ].map((item) => {
               const on = item.viaExtras
                 ? Boolean(extras.blockBackground)
@@ -564,22 +565,22 @@ export default function StudioPage({
         <div className="mx-auto flex w-full max-w-[1560px] flex-wrap items-center gap-x-4 gap-y-2 px-4 py-2.5 text-xs sm:px-6 lg:px-8">
           <span className={`inline-flex items-center gap-1.5 font-semibold ${live ? 'text-[color:var(--accent-soft)]' : 'text-[color:var(--muted)]'}`}>
             <span className={`h-1.5 w-1.5 rounded-full ${live ? 'bg-[color:var(--accent)] rec-blink' : 'bg-[color:var(--ink-text)]/30'}`} />
-            {live ? 'LIVE' : 'IDLE'}
+            {live ? 'LIVE' : 'INAKTIV'}
           </span>
           <span className="text-[color:var(--muted)]">
-            Mic{' '}
+            Mikro{' '}
             <strong className="font-medium text-[color:var(--ink-text)]">
-              {devices.inputDevices.find((d) => d.deviceId === selectedInput)?.label || 'Default'}
+              {devices.inputDevices.find((d) => d.deviceId === selectedInput)?.label || 'Standard'}
             </strong>
           </span>
           <span className="text-[color:var(--muted)]">
-            Speaker{' '}
+            Lautsprecher{' '}
             <strong className="font-medium text-[color:var(--ink-text)]">
-              {devices.outputDevices.find((d) => d.deviceId === selectedOutput)?.label || 'Default'}
+              {devices.outputDevices.find((d) => d.deviceId === selectedOutput)?.label || 'Standard'}
             </strong>
           </span>
           <span className="text-[color:var(--muted)]">
-            Latency{' '}
+            Latenz{' '}
             <strong className="font-mono font-medium text-[color:var(--ink-text)]">
               {latency > 0 ? `${Math.round(latency)}ms` : '—'}
             </strong>
@@ -588,15 +589,15 @@ export default function StudioPage({
             ) : null}
           </span>
           <span className="text-[color:var(--muted)]">
-            Model{' '}
+            Modell{' '}
             <strong className="font-medium text-[color:var(--ink-text)]">
-              {activeModel || 'DSP pitch'}
+              {activeModel || 'DSP-Tonhöhe'}
             </strong>
           </span>
           <span className="text-[color:var(--muted)]">
             DSP{' '}
             <strong className="font-medium text-[color:var(--ink-text)]">
-              {dspActive > 0 ? `${dspActive} on` : 'off'}
+              {dspActive > 0 ? `${dspActive} an` : 'aus'}
             </strong>
           </span>
           <span className="text-[color:var(--muted)]">

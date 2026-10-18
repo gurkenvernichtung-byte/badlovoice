@@ -48,9 +48,9 @@ function VoiceChip({ profile, selected, onSelect }) {
 }
 
 function pitchLabel(pitch) {
-  if (pitch === 0) return 'Natural 0';
-  if (pitch > 0) return `Higher +${pitch.toFixed(1)}`;
-  return `Deeper ${pitch.toFixed(1)}`;
+  if (pitch === 0) return 'Natürlich 0';
+  if (pitch > 0) return `Höher +${pitch.toFixed(1)}`;
+  return `Tiefer ${pitch.toFixed(1)}`;
 }
 
 export default function SimpleHome({
@@ -82,12 +82,12 @@ export default function SimpleHome({
 
   const tip = (() => {
     if (devices.permissionState === 'denied') {
-      return 'Allow mic access, then tap Start';
+      return 'Mikrofonzugriff erlauben, dann Start tippen';
     }
     if (pipeline.isRunning) {
-      return 'Talk now — headphones help';
+      return 'Jetzt sprechen — Kopfhörer helfen';
     }
-    return 'Headphones on, then Start';
+    return 'Kopfhörer auf, dann Start';
   })();
 
   const handleStart = async () => {
@@ -97,7 +97,7 @@ export default function SimpleHome({
       await devices.refresh?.();
       await pipeline.start(selectedInput || undefined, selectedOutput || undefined);
     } catch (err) {
-      setError(err.message || 'Could not start. Allow the mic, then try again.');
+      setError(err.message || 'Start nicht möglich. Mikrofon erlauben und erneut versuchen.');
     } finally {
       setStarting(false);
     }
@@ -125,7 +125,7 @@ export default function SimpleHome({
                 : 'bg-[color:var(--ink-text)]/25'
             }`}
           />
-          {pipeline.isRunning ? 'Live' : 'Off'}
+          {pipeline.isRunning ? 'Live' : 'Aus'}
         </div>
         <p className="mt-2 text-sm text-[color:var(--muted)]" aria-live="polite">
           {tip}
@@ -139,11 +139,11 @@ export default function SimpleHome({
           disabled={starting}
           className="btn-primary text-lg"
         >
-          {starting ? 'Starting…' : 'Start'}
+          {starting ? 'Startet…' : 'Start'}
         </button>
       ) : (
         <button type="button" onClick={handleStop} className="btn-stop text-lg">
-          Stop
+          Stopp
         </button>
       )}
 
@@ -165,13 +165,13 @@ export default function SimpleHome({
       )}
 
       <div className="panel flex gap-4 p-4">
-        <LevelBar label="Mic" value={pipeline.inputLevel} />
-        <LevelBar label="Voice" value={pipeline.outputLevel} tone="out" />
+        <LevelBar label="Mikro" value={pipeline.inputLevel} />
+        <LevelBar label="Stimme" value={pipeline.outputLevel} tone="out" />
       </div>
 
       <section>
-        <h2 className="font-display text-lg font-bold tracking-tight">Pick a voice</h2>
-        <p className="mt-1 text-sm text-[color:var(--muted)]">Tap one, then talk</p>
+        <h2 className="font-display text-lg font-bold tracking-tight">Stimme wählen</h2>
+        <p className="mt-1 text-sm text-[color:var(--muted)]">Tippen, dann sprechen</p>
         <div className="mt-3 grid grid-cols-2 gap-2.5">
           {featured.map((profile) => (
             <VoiceChip
@@ -189,7 +189,7 @@ export default function SimpleHome({
           aria-expanded={showMore}
           className="mt-3 min-h-11 w-full rounded-2xl border border-[color:var(--line)] bg-[color:var(--surface)] px-3 text-sm font-medium text-[color:var(--muted)] transition hover:border-[color:var(--ink-text)]/20 hover:text-[color:var(--ink-text)]"
         >
-          {showMore ? 'Fewer voices' : 'More voices'}
+          {showMore ? 'Weniger Stimmen' : 'Mehr Stimmen'}
         </button>
 
         {showMore && (
@@ -209,7 +209,7 @@ export default function SimpleHome({
       <section className="panel p-4">
         <div className="flex items-center justify-between gap-2">
           <label htmlFor="simple-pitch" className="text-sm font-semibold">
-            Pitch
+            Tonhöhe
           </label>
           <span className="text-xs font-medium tabular-nums text-[color:var(--accent-soft)]">
             {pitchLabel(pitch)}
@@ -227,8 +227,8 @@ export default function SimpleHome({
           aria-valuetext={pitchLabel(pitch)}
         />
         <div className="mt-1 flex justify-between text-xs text-[color:var(--muted)]">
-          <span>Deeper</span>
-          <span>Higher</span>
+          <span>Tiefer</span>
+          <span>Höher</span>
         </div>
       </section>
 
@@ -249,14 +249,14 @@ export default function SimpleHome({
           aria-expanded={showDevices}
           className="flex min-h-12 w-full items-center justify-between px-4 text-left text-sm font-medium text-[color:var(--ink-text)]"
         >
-          <span>Mic & speaker</span>
-          <span className="text-[color:var(--muted)]">{showDevices ? 'Hide' : 'Show'}</span>
+          <span>Mikrofon & Lautsprecher</span>
+          <span className="text-[color:var(--muted)]">{showDevices ? 'Ausblenden' : 'Einblenden'}</span>
         </button>
         {showDevices && (
           <div className="space-y-3 border-t border-[color:var(--line)] px-4 pb-4 pt-3">
             <div>
               <label className="block text-xs text-[color:var(--muted)]" htmlFor="simple-mic">
-                Microphone
+                Mikrofon
               </label>
               <select
                 id="simple-mic"
@@ -265,17 +265,17 @@ export default function SimpleHome({
                 disabled={pipeline.isRunning}
                 className="native-select-safe mt-1.5 min-h-11 w-full rounded-xl border border-[color:var(--line)] bg-[color:var(--surface)] px-3 text-sm outline-none focus-visible:border-[color:var(--accent)]/50 disabled:opacity-50"
               >
-                <option value="">Default microphone</option>
+                <option value="">Standard-Mikrofon</option>
                 {devices.inputDevices.map((device) => (
                   <option key={device.deviceId} value={device.deviceId}>
-                    {device.label || `Mic (${device.deviceId.slice(0, 8)}…)`}
+                    {device.label || `Mikrofon (${device.deviceId.slice(0, 8)}…)`}
                   </option>
                 ))}
               </select>
             </div>
             <div>
               <label className="block text-xs text-[color:var(--muted)]" htmlFor="simple-speaker">
-                Speaker
+                Lautsprecher
               </label>
               <select
                 id="simple-speaker"
@@ -284,10 +284,10 @@ export default function SimpleHome({
                 disabled={pipeline.isRunning}
                 className="native-select-safe mt-1.5 min-h-11 w-full rounded-xl border border-[color:var(--line)] bg-[color:var(--surface)] px-3 text-sm outline-none focus-visible:border-[color:var(--accent)]/50 disabled:opacity-50"
               >
-                <option value="">Default speaker</option>
+                <option value="">Standard-Lautsprecher</option>
                 {devices.outputDevices.map((device) => (
                   <option key={device.deviceId} value={device.deviceId}>
-                    {device.label || `Speaker (${device.deviceId.slice(0, 8)}…)`}
+                    {device.label || `Lautsprecher (${device.deviceId.slice(0, 8)}…)`}
                   </option>
                 ))}
               </select>

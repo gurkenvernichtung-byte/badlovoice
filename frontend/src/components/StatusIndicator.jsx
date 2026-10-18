@@ -2,9 +2,9 @@ import React from 'react';
 
 const STATUS_CONFIG = {
   connected: { color: 'bg-[color:var(--success)]', label: 'Live' },
-  connecting: { color: 'bg-amber-500', label: 'Connecting' },
+  connecting: { color: 'bg-amber-500', label: 'Verbinde' },
   disconnected: { color: 'bg-[color:var(--muted)]', label: 'Offline' },
-  error: { color: 'bg-[color:var(--danger)]', label: 'Error' },
+  error: { color: 'bg-[color:var(--danger)]', label: 'Fehler' },
 };
 
 // Compact header status: connection dot, engine mode, active model.
@@ -30,13 +30,13 @@ export default function StatusIndicator({ wsStatus, activeModel, mode }) {
 
       <div
         className="hidden items-center gap-2 rounded-xl border border-[color:var(--line)] bg-[color:var(--surface)] px-2.5 py-1.5 md:flex"
-        title={activeModel || 'No model loaded — pure DSP mode'}
+        title={activeModel || 'Kein Modell geladen — reiner DSP-Modus'}
       >
         <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-[color:var(--ink-text)]">
           {engineLabel}
         </span>
         <span className="max-w-[160px] truncate text-[11px] text-[color:var(--muted)]">
-          {activeModel || 'Effects only'}
+          {activeModel || 'Nur Effekte'}
         </span>
       </div>
     </div>

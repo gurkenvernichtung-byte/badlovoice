@@ -43,23 +43,23 @@ export default function Recorder({ pipeline, onEnsureStarted, compact = false })
     try {
       if (!isRunning) {
         if (!onEnsureStarted) {
-          setHint('Tap Start first, then Record.');
+          setHint('Erst Start tippen, dann Aufnehmen.');
           return;
         }
-        setHint('Starting…');
+        setHint('Startet…');
         await onEnsureStarted();
       }
       pipeline.startRecording();
-      setHint('Recording — talk, then tap Stop.');
+      setHint('Nimmt auf — sprechen, dann Stopp tippen.');
     } catch (err) {
-      setHint(err.message || 'Could not start recording');
+      setHint(err.message || 'Aufnahme konnte nicht gestartet werden');
     }
   };
 
   const handleStop = () => {
     const result = pipeline.stopRecording();
     const report = (rec) =>
-      setHint(rec ? 'Take saved to the list below.' : 'Empty take — talk longer, then try again.');
+      setHint(rec ? 'Aufnahme in der Liste unten gespeichert.' : 'Leere Aufnahme — länger sprechen und erneut versuchen.');
     if (result && typeof result.then === 'function') {
       result.then(report);
       return;
@@ -75,7 +75,7 @@ export default function Recorder({ pipeline, onEnsureStarted, compact = false })
     document.body.appendChild(link);
     link.click();
     link.remove();
-    setHint('Download started. If nothing happens, use Send → Save to Files.');
+    setHint('Download gestartet. Passiert nichts, „Senden → In Dateien sichern“ nutzen.');
   };
 
   const handleSend = async (take) => {
@@ -83,17 +83,17 @@ export default function Recorder({ pipeline, onEnsureStarted, compact = false })
     try {
       const outcome = await shareTake(take);
       if (outcome === 'unsupported') {
-        setHint('Sending is not available on this device — use Save.');
+        setHint('Senden ist auf diesem Gerät nicht verfügbar — bitte Speichern nutzen.');
       }
     } catch (err) {
-      setHint(err.message || 'Could not send the take');
+      setHint(err.message || 'Aufnahme konnte nicht gesendet werden');
     }
   };
 
   const handleDelete = (id) => {
     pipeline.deleteRecording(id);
     setConfirmId(null);
-    setHint('Take deleted.');
+    setHint('Aufnahme gelöscht.');
   };
 
   const takes = recordings.length ? (
@@ -104,7 +104,7 @@ export default function Recorder({ pipeline, onEnsureStarted, compact = false })
           className="rounded-2xl border border-[color:var(--line)] bg-[color:var(--surface-2)]/50 p-3.5"
         >
           <p className="text-xs text-[color:var(--muted)]">
-            Take {recordings.length - index} · {formatDuration(take.seconds)} · {formatSize(take.size)}
+            Aufnahme {recordings.length - index} · {formatDuration(take.seconds)} · {formatSize(take.size)}
           </p>
           <audio controls src={take.url} className="mt-2 h-9 w-full" />
           <div className="mt-3 flex flex-wrap items-center gap-2">
@@ -113,14 +113,14 @@ export default function Recorder({ pipeline, onEnsureStarted, compact = false })
               onClick={() => handleSave(take)}
               className="chip-button !normal-case min-h-10"
             >
-              Save
+              Speichern
             </button>
             <button
               type="button"
               onClick={() => handleSend(take)}
               className="chip-button !normal-case min-h-10"
             >
-              Send
+              Senden
             </button>
             {confirmId === take.id ? (
               <>
@@ -129,14 +129,14 @@ export default function Recorder({ pipeline, onEnsureStarted, compact = false })
                   onClick={() => handleDelete(take.id)}
                   className="btn-secondary-danger min-h-10"
                 >
-                  Confirm delete
+                  Löschen bestätigen
                 </button>
                 <button
                   type="button"
                   onClick={() => setConfirmId(null)}
                   className="chip-button !normal-case min-h-10"
                 >
-                  Cancel
+                  Abbrechen
                 </button>
               </>
             ) : (
@@ -145,7 +145,7 @@ export default function Recorder({ pipeline, onEnsureStarted, compact = false })
                 onClick={() => setConfirmId(take.id)}
                 className="chip-button !normal-case min-h-10"
               >
-                Delete
+                Löschen
               </button>
             )}
           </div>
@@ -158,7 +158,7 @@ export default function Recorder({ pipeline, onEnsureStarted, compact = false })
     return (
       <section className="panel p-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <p className="text-sm font-semibold text-[color:var(--ink-text)]">Record</p>
+          <p className="text-sm font-semibold text-[color:var(--ink-text)]">Aufnahme</p>
           {isRecording ? (
             <div className="flex items-center gap-3">
               <span className="flex items-center gap-2 font-mono text-sm tabular-nums text-[color:var(--danger-soft)]">
@@ -166,12 +166,12 @@ export default function Recorder({ pipeline, onEnsureStarted, compact = false })
                 {formatDuration(recordSeconds)}
               </span>
               <button type="button" onClick={handleStop} className="btn-secondary-danger">
-                Stop
+                Stopp
               </button>
             </div>
           ) : (
             <button type="button" onClick={handleRecord} className="btn-record">
-              {isRunning ? 'Record' : 'Start + Record'}
+              {isRunning ? 'Aufnehmen' : 'Start + Aufnehmen'}
             </button>
           )}
         </div>
@@ -189,8 +189,8 @@ export default function Recorder({ pipeline, onEnsureStarted, compact = false })
     <section className="panel p-5">
       <div className="flex items-center justify-between gap-3">
         <div>
-          <p className="panel-kicker">Recorder</p>
-          <h2 className="panel-title">Capture output</h2>
+          <p className="panel-kicker">Aufnahme</p>
+          <h2 className="panel-title">Ausgabe aufnehmen</h2>
         </div>
 
         {isRecording ? (
@@ -200,22 +200,22 @@ export default function Recorder({ pipeline, onEnsureStarted, compact = false })
               {formatDuration(recordSeconds)}
             </span>
             <button type="button" onClick={handleStop} className="btn-secondary-danger">
-              Stop
+              Stopp
             </button>
           </div>
         ) : (
           <button type="button" onClick={handleRecord} className="btn-record">
-            {isRunning ? 'Record' : 'Start + Record'}
+            {isRunning ? 'Aufnehmen' : 'Start + Aufnehmen'}
           </button>
         )}
       </div>
 
       <ol className="mt-3 list-decimal space-y-1 pl-4 text-xs text-[color:var(--muted)]">
-        <li>Wear headphones</li>
+        <li>Kopfhörer aufsetzen</li>
         <li>
-          Press <strong className="text-[color:var(--ink-text)]">Start</strong> (or Start + Record)
+          Drücke <strong className="text-[color:var(--ink-text)]">Start</strong> (oder Start + Aufnehmen)
         </li>
-        <li>Talk, then Stop — Save, Send or Delete each take below</li>
+        <li>Sprechen, dann Stopp — jede Aufnahme unten speichern, senden oder löschen</li>
       </ol>
 
       {hint ? (

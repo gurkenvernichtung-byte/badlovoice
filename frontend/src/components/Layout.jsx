@@ -4,14 +4,14 @@ const APP_NAME = 'Red Room Manager';
 
 const TABS = [
   { id: 'studio', label: 'Studio' },
-  { id: 'models', label: 'Models' },
-  { id: 'converter', label: 'Converter' },
+  { id: 'models', label: 'Modelle' },
+  { id: 'converter', label: 'Konverter' },
 ];
 
 const MODES = [
-  { id: 'simple', label: 'Simple' },
+  { id: 'simple', label: 'Einfach' },
   { id: 'studio', label: 'Studio' },
-  { id: 'advanced', label: 'Advanced' },
+  { id: 'advanced', label: 'Erweitert' },
 ];
 
 function ThemeToggle() {
@@ -36,11 +36,11 @@ function ThemeToggle() {
     <button
       type="button"
       className="mode-toggle"
-      title={theme === 'light' ? 'Switch to dark' : 'Switch to light'}
-      aria-label="Toggle theme"
+      title={theme === 'light' ? 'Zu dunkel wechseln' : 'Zu hell wechseln'}
+      aria-label="Design wechseln"
       onClick={() => setTheme((t) => (t === 'light' ? 'dark' : 'light'))}
     >
-      {theme === 'light' ? 'Dark' : 'Light'}
+      {theme === 'light' ? 'Dunkel' : 'Hell'}
     </button>
   );
 }
@@ -116,14 +116,14 @@ function LayoutToggle() {
     <button
       type="button"
       className={`mode-toggle ${desktop ? 'mode-toggle-on' : ''}`}
-      title={desktop ? 'Back to phone layout (no sideways scroll)' : 'Wide desktop layout (swipe sideways)'}
-      aria-label={desktop ? 'Switch to phone layout' : 'Switch to desktop layout'}
+      title={desktop ? 'Zurück zur Handy-Ansicht (ohne Seitwärtsscrollen)' : 'Breite Desktop-Ansicht (seitlich wischen)'}
+      aria-label={desktop ? 'Zur Handy-Ansicht wechseln' : 'Zur Desktop-Ansicht wechseln'}
       aria-pressed={desktop}
       onClick={() =>
         setLayout((v) => (v === 'desktop' ? (isNativeApp() ? 'phone' : 'auto') : 'desktop'))
       }
     >
-      {desktop ? 'Phone' : 'Desktop'}
+      {desktop ? 'Handy' : 'Desktop'}
     </button>
   );
 }
@@ -160,7 +160,7 @@ export default function Layout({
                   {APP_NAME}
                 </p>
                 <p className="truncate text-xs text-[color:var(--muted)]">
-                  Voice studio
+                  Stimmen-Studio
                 </p>
               </div>
             </div>
@@ -174,7 +174,7 @@ export default function Layout({
                     isLive ? 'bg-[color:var(--accent)] rec-blink' : 'bg-[color:var(--ink-text)]/25'
                   }`}
                 />
-                {isLive ? 'LIVE' : 'Idle'}
+                {isLive ? 'LIVE' : 'Inaktiv'}
               </span>
               {statusSlot}
               <LayoutToggle />
@@ -236,7 +236,7 @@ export default function Layout({
             <span className="mx-1.5 text-[color:var(--ink-text)]/25" aria-hidden="true">
               ·
             </span>
-            Built by Abuzar
+            Gebaut von Abuzar
           </p>
         </footer>
       </div>
