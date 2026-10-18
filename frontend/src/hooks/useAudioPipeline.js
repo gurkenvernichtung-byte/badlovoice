@@ -1,6 +1,7 @@
 import { useCallback, useRef, useState } from 'react';
 import { SAMPLE_RATE, CHUNK_SIZE } from '../lib/constants';
 import { encodeWav } from '../lib/wav';
+import { startBackgroundAudio, stopBackgroundAudio } from '../lib/backgroundAudio';
 
 export default function useAudioPipeline(wsHook) {
   const [isRunning, setIsRunning] = useState(false);
@@ -297,6 +298,7 @@ export default function useAudioPipeline(wsHook) {
         await audioContext.resume();
         animFrameRef.current = requestAnimationFrame(updateLevels);
         setIsRunning(true);
+        startBackgroundAudio();
       } catch (err) {
         console.error('Failed to start audio pipeline:', err);
         stop();
@@ -430,6 +432,7 @@ export default function useAudioPipeline(wsHook) {
     setGateOpen(false);
     setGateLevelDb(-80);
     setIsRunning(false);
+    stopBackgroundAudio();
   }, [wsHook, finalizeRecording]);
 
   const getAnalysers = useCallback(
