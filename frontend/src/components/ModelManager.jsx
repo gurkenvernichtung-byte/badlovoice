@@ -60,7 +60,7 @@ export default function ModelManager({ activeModel = null, onActiveModelChange, 
       onActiveModelChange?.(nextActiveModelName);
       setError(null);
     } catch (err) {
-      setError(err.message || 'Failed to load models');
+      setError(err.message || 'Modelle konnten nicht geladen werden');
     } finally {
       setLoading(false);
     }
@@ -85,7 +85,7 @@ export default function ModelManager({ activeModel = null, onActiveModelChange, 
     const validExtensions = ['.onnx', '.pth', '.pt', '.index'];
     const ext = '.' + file.name.split('.').pop().toLowerCase();
     if (!validExtensions.includes(ext)) {
-      setError('Invalid file type. Please upload .onnx, .pth, .pt, or .index files.');
+      setError('Ungültiger Dateityp. Bitte .onnx-, .pth-, .pt- oder .index-Dateien hochladen.');
       return;
     }
 
@@ -112,7 +112,7 @@ export default function ModelManager({ activeModel = null, onActiveModelChange, 
 
       await loadModels();
     } catch (err) {
-      setError(err.message || 'Upload failed');
+      setError(err.message || 'Upload fehlgeschlagen');
       setUploading(false);
       setUploadProgress(0);
     } finally {
@@ -143,7 +143,7 @@ export default function ModelManager({ activeModel = null, onActiveModelChange, 
       syncActiveModel(name);
       await loadModels();
     } catch (err) {
-      setError(err.message || 'Failed to activate model');
+      setError(err.message || 'Modell konnte nicht aktiviert werden');
     } finally {
       setOperatingOn(null);
     }
@@ -156,7 +156,7 @@ export default function ModelManager({ activeModel = null, onActiveModelChange, 
       await deactivateModel();
       syncActiveModel(null);
     } catch (err) {
-      setError(err.message || 'Failed to deactivate model');
+      setError(err.message || 'Modell konnte nicht deaktiviert werden');
     } finally {
       setOperatingOn(null);
     }
@@ -180,7 +180,7 @@ export default function ModelManager({ activeModel = null, onActiveModelChange, 
       await deleteModel(name);
       await loadModels();
     } catch (err) {
-      setError(err.message || 'Failed to delete model');
+      setError(err.message || 'Modell konnte nicht gelöscht werden');
     } finally {
       setOperatingOn(null);
     }
@@ -190,15 +190,15 @@ export default function ModelManager({ activeModel = null, onActiveModelChange, 
     <section className="panel p-6">
       <div className="flex items-center justify-between">
         <div>
-          <p className="panel-kicker">Voice files</p>
-          <h2 className="panel-title">RVC / ONNX voice modules</h2>
+          <p className="panel-kicker">Stimmdateien</p>
+          <h2 className="panel-title">RVC-/ONNX-Stimmmodule</h2>
         </div>
 
         <button
           onClick={loadModels}
           disabled={loading}
           className="rounded border border-[color:var(--line)] bg-[color:var(--surface)] p-2 text-[color:var(--muted)] transition hover:border-[color:var(--ink-text)]/25 hover:bg-[color:var(--surface)] hover:text-[color:var(--ink-text)]"
-          title="Refresh models"
+          title="Modelle aktualisieren"
         >
           <svg
             className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`}
@@ -217,17 +217,17 @@ export default function ModelManager({ activeModel = null, onActiveModelChange, 
       </div>
 
       <p className="mt-2 text-sm text-[color:var(--muted)]">
-        A <strong className="font-medium text-[color:var(--ink-text)]">module</strong> is a trained AI voice file.
+        Ein <strong className="font-medium text-[color:var(--ink-text)]">Modul</strong> ist eine trainierte KI-Stimmdatei.
         <br />
-        <strong className="text-[color:var(--ink-text)]">RVC</strong> = <code className="text-[color:var(--muted)]">.pth</code> models
-        (best quality, needs PyTorch). <strong className="text-[color:var(--ink-text)]">ONNX</strong> ={' '}
-        <code className="text-[color:var(--muted)]">.onnx</code> export (often easier to run).
-        Optional matching <code className="text-[color:var(--muted)]">.index</code> improves quality.
-        Click <strong className="text-[color:var(--ink-text)]">Activate</strong>, then Studio → Start with headphones.
+        <strong className="text-[color:var(--ink-text)]">RVC</strong> = <code className="text-[color:var(--muted)]">.pth</code>-Modelle
+        (beste Qualität, braucht PyTorch). <strong className="text-[color:var(--ink-text)]">ONNX</strong> ={' '}
+        <code className="text-[color:var(--muted)]">.onnx</code>-Export (oft einfacher zu betreiben).
+        Eine passende <code className="text-[color:var(--muted)]">.index</code>-Datei verbessert die Qualität (optional).
+        Auf <strong className="text-[color:var(--ink-text)]">Aktivieren</strong> klicken, dann Studio → Start mit Kopfhörern.
         {runtime?.torch?.available ? (
-          <span className="text-[#6ee7b7]"> PyTorch ready.</span>
+          <span className="text-[#6ee7b7]"> PyTorch bereit.</span>
         ) : (
-          <span className="text-[#e09a55]"> PyTorch missing.</span>
+          <span className="text-[#e09a55]"> PyTorch fehlt.</span>
         )}
       </p>
 
@@ -270,7 +270,7 @@ export default function ModelManager({ activeModel = null, onActiveModelChange, 
           <line x1="12" y1="3" x2="12" y2="15" />
         </svg>
         <p className="text-sm font-medium text-[color:var(--ink-text)]">
-          {dragActive ? 'Drop model files here' : 'Drop checkpoints or click to upload'}
+          {dragActive ? 'Modelldateien hier ablegen' : 'Checkpoints ablegen oder klicken zum Hochladen'}
         </p>
         <p className="mt-1 text-xs uppercase tracking-[0.22em] text-[color:var(--muted)]">
           .pth / .pt / .onnx + optional .index
@@ -313,7 +313,7 @@ export default function ModelManager({ activeModel = null, onActiveModelChange, 
           </div>
         ) : models.length === 0 ? (
           <p className="rounded-md border border-[color:var(--line)] bg-[color:var(--surface-2)]/60 px-4 py-8 text-center text-sm text-[color:var(--muted)]">
-            No models yet — upload an RVC checkpoint, or just use the DSP studio.
+            Noch keine Modelle — lade einen RVC-Checkpoint hoch oder nutze einfach das DSP-Studio.
           </p>
         ) : (
           models.map((model) => {
@@ -363,10 +363,10 @@ export default function ModelManager({ activeModel = null, onActiveModelChange, 
                       <button
                         onClick={handleDeactivate}
                         disabled={isOperating}
-                        title="Click to deactivate"
+                        title="Klicken zum Deaktivieren"
                         className="rounded border border-emerald-300/40 bg-emerald-400/10 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.12em] text-emerald-200 transition hover:bg-emerald-400/20 disabled:opacity-50"
                       >
-                        {isOperating ? '…' : 'Active'}
+                        {isOperating ? '…' : 'Aktiv'}
                       </button>
                     ) : (
                       <button
@@ -374,7 +374,7 @@ export default function ModelManager({ activeModel = null, onActiveModelChange, 
                         disabled={isOperating}
                         className="rounded border border-[color:var(--line)] bg-[color:var(--surface)] px-3 py-1.5 text-xs font-medium uppercase tracking-[0.12em] text-[color:var(--ink-text)] transition hover:border-[color:var(--ink-text)]/25 hover:bg-[color:var(--surface)] hover:text-[color:var(--ink-text)] disabled:opacity-50"
                       >
-                        {isOperating ? 'Loading…' : 'Activate'}
+                        {isOperating ? 'Lädt…' : 'Aktivieren'}
                       </button>
                     )}
 
@@ -387,7 +387,7 @@ export default function ModelManager({ activeModel = null, onActiveModelChange, 
                           : 'border-[color:var(--line)] bg-[color:var(--surface)] text-[color:var(--muted)] hover:border-rose-300/30 hover:bg-[color:var(--danger)]/10 hover:text-[color:var(--danger-soft)]'
                       }`}
                     >
-                      {deleteConfirm === name ? 'Confirm' : 'Delete'}
+                      {deleteConfirm === name ? 'Bestätigen' : 'Löschen'}
                     </button>
                   </div>
                 </div>

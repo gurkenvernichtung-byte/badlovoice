@@ -52,13 +52,13 @@ export default function StreamExtras({
   return (
     <section className="panel space-y-4 p-4">
       <div>
-        <p className="panel-kicker">Merged controls</p>
-        <h2 className="panel-title">Stream extras</h2>
+        <p className="panel-kicker">Zusammengeführte Regler</p>
+        <h2 className="panel-title">Stream-Extras</h2>
       </div>
 
       <div>
         <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[color:var(--muted)]">
-          Latency mode · echidna
+          Latenzmodus · echidna
         </p>
         <div className="mt-2 grid gap-2 sm:grid-cols-3">
           {modes.map((mode) => (
@@ -101,7 +101,7 @@ export default function StreamExtras({
         </label>
         <label className="block">
           <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[color:var(--muted)]">
-            Extra buffer chunks
+            Zusätzliche Puffer-Chunks
           </span>
           <input
             type="range"
@@ -120,20 +120,20 @@ export default function StreamExtras({
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div>
             <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[color:var(--muted)]">
-              VAD / noise gate · Vonovox
+              VAD / Rauschgate · Vonovox
             </p>
-            <p className="mt-1 text-xs text-[color:var(--muted)]">Mute silence so the model stays quiet between words.</p>
+            <p className="mt-1 text-xs text-[color:var(--muted)]">Stille stummschalten, damit das Modell zwischen Wörtern ruhig bleibt.</p>
           </div>
           <button
             type="button"
             className={`chip-button ${vadEnabled ? '!border-[#6ee7b7] !text-[#6ee7b7]' : ''}`}
             onClick={() => onChange({ vadEnabled: !vadEnabled })}
           >
-            {vadEnabled ? 'VAD on' : 'VAD off'}
+            {vadEnabled ? 'VAD an' : 'VAD aus'}
           </button>
         </div>
         <label className="mt-3 block">
-          <span className="text-[10px] uppercase tracking-wider text-[color:var(--muted)]">Threshold dB</span>
+          <span className="text-[10px] uppercase tracking-wider text-[color:var(--muted)]">Schwelle dB</span>
           <input
             type="range"
             min={-80}
@@ -150,17 +150,17 @@ export default function StreamExtras({
 
       <div>
         <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[color:var(--muted)]">
-          Profiles · echidna
+          Profile · echidna
         </p>
         <div className="mt-2 flex flex-wrap gap-2">
           <input
             value={profileName}
             onChange={(e) => setProfileName(e.target.value)}
-            placeholder="Profile name"
+            placeholder="Profilname"
             className="min-w-[10rem] flex-1 rounded border border-[color:var(--line)] bg-black/30 px-2 py-1.5 text-sm"
           />
           <button type="button" className="chip-button" onClick={persistProfile}>
-            Save profile
+            Profil speichern
           </button>
         </div>
         <div className="mt-2 flex flex-wrap gap-2">
@@ -183,16 +183,16 @@ export default function StreamExtras({
 
       <div>
         <button type="button" className="chip-button" onClick={() => setShowGuide((v) => !v)}>
-          {showGuide ? 'Hide' : 'Show'} VAC routing guide · Vonovox
+          {showGuide ? 'Ausblenden' : 'Einblenden'} VAC-Routing-Anleitung · Vonovox
         </button>
         {showGuide ? (
           <ol className="mt-3 list-decimal space-y-2 pl-5 text-sm text-[color:var(--muted)]">
-            <li>Install VAC (Virtual Audio Cable) — prefer VAC over VB-Cable for fewer glitches.</li>
-            <li>Set mic + virtual line to 48000 Hz, 1 ch, 16-bit when possible.</li>
-            <li>BadloVoice input = your real mic. Output = Line 1 (VAC).</li>
-            <li>In Windows Sound → Recording → Line 1 → Listen to this device (for monitoring).</li>
-            <li>In Discord/games, pick Line 1 as the microphone.</li>
-            <li>For remote GPU box (w-okada style), run the backend on the GPU PC and open this UI over the network.</li>
+            <li>VAC (Virtual Audio Cable) installieren — VAC ist weniger störanfällig als VB-Cable.</li>
+            <li>Mikrofon + virtuelle Leitung möglichst auf 48000 Hz, 1 Kanal, 16 Bit stellen.</li>
+            <li>BadloVoice-Eingang = dein echtes Mikrofon. Ausgang = Leitung 1 (VAC).</li>
+            <li>In Windows-Sound → Aufnahme → Leitung 1 → „Dieses Gerät abhören“ (zur Kontrolle).</li>
+            <li>In Discord/Spielen Leitung 1 als Mikrofon wählen.</li>
+            <li>Für eine entfernte GPU-Box (w-okada-Stil): Backend auf dem GPU-PC starten und diese Oberfläche über das Netzwerk öffnen.</li>
           </ol>
         ) : null}
       </div>

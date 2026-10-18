@@ -50,7 +50,7 @@ export default function FileConverter({ voice, effects, activeModel }) {
         return { url: URL.createObjectURL(blob), name, size: blob.size };
       });
     } catch (err) {
-      setError(err.message || 'Conversion failed');
+      setError(err.message || 'Konvertierung fehlgeschlagen');
     } finally {
       setConverting(false);
     }
@@ -60,18 +60,18 @@ export default function FileConverter({ voice, effects, activeModel }) {
     <section className="panel p-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <p className="panel-kicker">File Converter</p>
-          <h2 className="panel-title">Offline voice conversion</h2>
+          <p className="panel-kicker">Dateikonverter</p>
+          <h2 className="panel-title">Offline-Stimmkonvertierung</h2>
         </div>
         <span className="rounded border border-[color:var(--line)] bg-[color:var(--surface)] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-[color:var(--muted)]">
-          Uses current studio settings
+          Nutzt die aktuellen Studio-Einstellungen
         </span>
       </div>
 
       <p className="mt-2 text-sm text-[color:var(--muted)]">
-        Render a whole audio file through {activeModel ? 'the active model and ' : ''}the
-        effect chain — pitch {voice.pitch > 0 ? '+' : ''}{voice.pitch} st,
-        formant {voice.formant > 0 ? '+' : ''}{voice.formant} st, {fxCount} effect{fxCount === 1 ? '' : 's'}.
+        Eine ganze Audiodatei rendern über {activeModel ? 'das aktive Modell und ' : ''}die
+        Effektkette — Tonhöhe {voice.pitch > 0 ? '+' : ''}{voice.pitch} st,
+        Formant {voice.formant > 0 ? '+' : ''}{voice.formant} st, {fxCount} Effekt{fxCount === 1 ? '' : 'e'}.
       </p>
 
       <div
@@ -113,12 +113,12 @@ export default function FileConverter({ voice, effects, activeModel }) {
         {file ? (
           <>
             <p className="text-sm font-medium text-[color:var(--ink-text)]">{file.name}</p>
-            <p className="mt-1 text-xs text-[color:var(--muted)]">{formatSize(file.size)} · click to choose another file</p>
+            <p className="mt-1 text-xs text-[color:var(--muted)]">{formatSize(file.size)} · klicken, um eine andere Datei zu wählen</p>
           </>
         ) : (
           <>
             <p className="text-sm font-medium text-[color:var(--ink-text)]">
-              {dragActive ? 'Drop the audio file here' : 'Drop an audio file or click to browse'}
+              {dragActive ? 'Audiodatei hier ablegen' : 'Audiodatei ablegen oder klicken zum Durchsuchen'}
             </p>
             <p className="mt-1 text-xs uppercase tracking-[0.2em] text-[color:var(--muted)]">
               wav · mp3 · flac · ogg · m4a
@@ -136,9 +136,9 @@ export default function FileConverter({ voice, effects, activeModel }) {
             onChange={(event) => setUseModel(event.target.checked)}
             className="h-4 w-4 accent-zinc-300"
           />
-          Run through active model
+          Über aktives Modell laufen lassen
           <span className="text-xs text-[color:var(--muted)]">
-            {activeModel ? `(${activeModel})` : '(no model active — DSP only)'}
+            {activeModel ? `(${activeModel})` : '(kein Modell aktiv — nur DSP)'}
           </span>
         </label>
 
@@ -153,17 +153,17 @@ export default function FileConverter({ voice, effects, activeModel }) {
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
               </svg>
-              Converting…
+              Konvertiert…
             </span>
           ) : (
-            'Convert'
+            'Konvertieren'
           )}
         </button>
       </div>
 
       {converting && (
         <p className="mt-3 text-xs text-[color:var(--muted)]">
-          Long files can take a while — the whole file runs through the pipeline server-side.
+          Lange Dateien brauchen etwas Zeit — die ganze Datei läuft serverseitig durch die Pipeline.
         </p>
       )}
 
@@ -180,7 +180,7 @@ export default function FileConverter({ voice, effects, activeModel }) {
               {result.name} <span className="text-xs text-emerald-200/60">({formatSize(result.size)})</span>
             </p>
             <a href={result.url} download={result.name} className="chip-button !normal-case">
-              ↓ Download WAV
+              ↓ WAV herunterladen
             </a>
           </div>
           <audio controls src={result.url} className="mt-3 h-9 w-full" />

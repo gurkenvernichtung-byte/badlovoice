@@ -21,17 +21,17 @@ export default class ErrorBoundary extends React.Component {
         this.props.fallback || (
           <div className="panel p-4" role="alert">
             <p className="text-sm font-semibold text-[color:var(--ink-text)]">
-              This panel failed to load
+              Dieser Bereich konnte nicht geladen werden
             </p>
             <p className="mt-1 text-xs text-[color:var(--muted)]">
-              {this.state.error?.message || 'Unknown error'}
+              {this.state.error?.message || 'Unbekannter Fehler'}
             </p>
             <button
               type="button"
               className="chip-button mt-3"
               onClick={() => this.setState({ error: null })}
             >
-              Try again
+              Erneut versuchen
             </button>
           </div>
         )

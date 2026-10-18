@@ -117,10 +117,10 @@ export default function EffectsRack({
       <div id="effects" className="scroll-mt-20">
         <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
           <p className="text-sm font-semibold text-[color:var(--ink-text)]">
-            Advanced DSP · {activeCount} active
+            Erweitertes DSP · {activeCount} aktiv
           </p>
           <button type="button" onClick={handleBypassAll} className="chip-button">
-            Bypass all
+            Alle umgehen
           </button>
         </div>
         {grid}
@@ -132,8 +132,8 @@ export default function EffectsRack({
     <section id="effects" className="panel scroll-mt-20 p-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <p className="panel-kicker">Effects Rack</p>
-          <h2 className="panel-title">DSP chain</h2>
+          <p className="panel-kicker">Effekt-Rack</p>
+          <h2 className="panel-title">DSP-Kette</h2>
         </div>
         <div className="flex items-center gap-2">
           <span className={`rounded border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] ${
@@ -142,17 +142,17 @@ export default function EffectsRack({
               : 'border-[color:var(--line)] bg-[color:var(--surface)] text-[color:var(--muted)]'
           }`}
           >
-            {activeCount} active
+            {activeCount} aktiv
           </span>
           <button type="button" onClick={handleBypassAll} className="chip-button">
-            Bypass all
+            Alle umgehen
           </button>
         </div>
       </div>
 
       <p className="mt-2 text-xs text-[color:var(--muted)]">
-        Runs on the server after model inference — works with or without a voice model.
-        The noise gate runs on the mic signal before conversion.
+        Läuft nach der Modellinferenz auf dem Server — funktioniert mit oder ohne Stimmmodell.
+        Das Rauschgate arbeitet vor der Umwandlung auf dem Mikrofonsignal.
       </p>
 
       <div className="mt-4">{grid}</div>

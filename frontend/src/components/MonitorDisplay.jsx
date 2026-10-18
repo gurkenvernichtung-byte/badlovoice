@@ -101,7 +101,7 @@ export default function MonitorDisplay({
       <div className="flex items-center justify-between">
         <div>
           <p className="panel-kicker">Monitor</p>
-          <h2 className="panel-title">Levels & latency</h2>
+          <h2 className="panel-title">Pegel & Latenz</h2>
         </div>
         {serverStats?.effectsActive > 0 && (
           <span className="rounded border border-[color:var(--line)] bg-[color:var(--surface)] px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-[color:var(--ink-text)]">
@@ -111,15 +111,15 @@ export default function MonitorDisplay({
       </div>
 
       <div className="mt-5 space-y-3.5">
-        <VuMeter label="Input" level={inputLevel} />
-        <VuMeter label="Output" level={outputLevel} />
+        <VuMeter label="Eingang" level={inputLevel} />
+        <VuMeter label="Ausgang" level={outputLevel} />
       </div>
 
       <div className="mt-5 rounded border border-[color:var(--line)] bg-[color:var(--surface-2)]/70 p-4">
         <div className="flex items-end justify-between gap-3">
           <div>
             <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[color:var(--muted)]">
-              Round trip
+              Rundlauf
             </p>
             <p className={`mt-1 font-mono text-3xl font-semibold tabular-nums tracking-[-0.04em] ${latencyColor}`}>
               {latencyMs > 0 ? `${latencyMs}` : '--'}
@@ -134,14 +134,14 @@ export default function MonitorDisplay({
 
       <div className="mt-3 grid grid-cols-3 gap-2">
         <StatChip
-          label="Model"
+          label="Modell"
           value={serverStats?.modelMs > 0 ? `${Math.round(serverStats.modelMs)}ms` : '--'}
         />
         <StatChip
           label="DSP"
           value={serverStats?.dspMs > 0 ? `${Math.max(1, Math.round(serverStats.dspMs))}ms` : '--'}
         />
-        <StatChip label="Network" value={latencyMs > 0 ? `${networkMs}ms` : '--'} />
+        <StatChip label="Netzwerk" value={latencyMs > 0 ? `${networkMs}ms` : '--'} />
       </div>
     </section>
   );

@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 
 const F0_METHODS = [
-  { value: 'pm', label: 'PM', description: 'Lowest latency' },
-  { value: 'harvest', label: 'Harvest', description: 'Stable tone' },
-  { value: 'crepe', label: 'Crepe', description: 'GPU quality' },
-  { value: 'rmvpe', label: 'RMVPE', description: 'Best overall' },
-  { value: 'fcpe', label: 'FCPE', description: 'Fast neural, realtime' },
+  { value: 'pm', label: 'PM', description: 'Geringste Latenz' },
+  { value: 'harvest', label: 'Harvest', description: 'Stabiler Klang' },
+  { value: 'crepe', label: 'Crepe', description: 'GPU-Qualität' },
+  { value: 'rmvpe', label: 'RMVPE', description: 'Insgesamt am besten' },
+  { value: 'fcpe', label: 'FCPE', description: 'Schnell neuronal, Echtzeit' },
 ];
 
 function BigSlider({ label, value, min, max, step, unit, onChange, onReset }) {
@@ -70,7 +70,7 @@ export default function VoiceLab({ voice, onChange, hasModel, isRunning, compact
   const sliders = (
     <div className={compact ? 'mt-3 space-y-4' : 'mt-5 space-y-6'}>
       <BigSlider
-        label="Pitch Shift"
+        label="Tonhöhe verschieben"
         value={voice.pitch}
         min={-12}
         max={12}
@@ -81,7 +81,7 @@ export default function VoiceLab({ voice, onChange, hasModel, isRunning, compact
       />
 
       <BigSlider
-        label="Formant Shift"
+        label="Formant verschieben"
         value={voice.formant}
         min={-12}
         max={12}
@@ -99,9 +99,9 @@ export default function VoiceLab({ voice, onChange, hasModel, isRunning, compact
         <div className="flex items-center justify-between gap-2">
           <div>
             <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[color:var(--muted)]">
-              Voice Lab
+              Stimmlabor
             </p>
-            <h2 className="mt-0.5 text-base font-semibold tracking-tight">Pitch & formant</h2>
+            <h2 className="mt-0.5 text-base font-semibold tracking-tight">Tonhöhe & Formant</h2>
           </div>
           <button
             type="button"
@@ -109,7 +109,7 @@ export default function VoiceLab({ voice, onChange, hasModel, isRunning, compact
             onClick={() => onChange({ pitch: 0, formant: 0 })}
             disabled={voice.pitch === 0 && voice.formant === 0}
           >
-            Reset
+            Zurücksetzen
           </button>
         </div>
         {sliders}
@@ -121,13 +121,13 @@ export default function VoiceLab({ voice, onChange, hasModel, isRunning, compact
     <section className="panel p-5">
       <div className="flex items-center justify-between">
         <div>
-          <p className="panel-kicker">Voice Lab</p>
-          <h2 className="panel-title">Pitch & timbre</h2>
+          <p className="panel-kicker">Stimmlabor</p>
+          <h2 className="panel-title">Tonhöhe & Klangfarbe</h2>
           {voice.pitch === 0 && voice.formant === 0 ? (
-            <p className="mt-1 text-xs text-[color:var(--accent-soft)]">Pitch/formant at 0 = no change. Drag pitch up/down.</p>
+            <p className="mt-1 text-xs text-[color:var(--accent-soft)]">Tonhöhe/Formant auf 0 = keine Änderung. Tonhöhe nach oben/unten ziehen.</p>
           ) : (
             <p className="mt-1 text-xs text-[color:var(--success)]">
-              Live shift: pitch {voice.pitch > 0 ? '+' : ''}{voice.pitch} · formant {voice.formant > 0 ? '+' : ''}{voice.formant}
+              Live-Verschiebung: Tonhöhe {voice.pitch > 0 ? '+' : ''}{voice.pitch} · Formant {voice.formant > 0 ? '+' : ''}{voice.formant}
             </p>
           )}
         </div>
@@ -137,7 +137,7 @@ export default function VoiceLab({ voice, onChange, hasModel, isRunning, compact
             : 'border-[color:var(--line)] bg-[color:var(--surface)] text-[color:var(--muted)]'
         }`}
         >
-          {isRunning ? 'Live' : 'Applies on start'}
+          {isRunning ? 'Live' : 'Wirkt beim Start'}
         </span>
       </div>
 
@@ -145,7 +145,7 @@ export default function VoiceLab({ voice, onChange, hasModel, isRunning, compact
 
       <div className="mt-6 border-t border-[color:var(--line)] pt-5">
         <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[color:var(--muted)]">
-          F0 Method {hasModel ? '' : '· needs an RVC model'}
+          F0-Methode {hasModel ? '' : '· braucht ein RVC-Modell'}
         </p>
         <div className="mt-3 grid grid-cols-2 gap-2">
           {F0_METHODS.map((method) => {
@@ -175,7 +175,7 @@ export default function VoiceLab({ voice, onChange, hasModel, isRunning, compact
           onClick={() => setShowAdvanced((v) => !v)}
           className="flex w-full items-center justify-between text-[10px] font-semibold uppercase tracking-[0.18em] text-[color:var(--muted)] transition hover:text-[color:var(--ink-text)]"
         >
-          RVC Advanced
+          RVC erweitert
           <svg
             className={`h-3.5 w-3.5 transition-transform ${showAdvanced ? 'rotate-180' : ''}`}
             viewBox="0 0 24 24"
@@ -191,7 +191,7 @@ export default function VoiceLab({ voice, onChange, hasModel, isRunning, compact
         {showAdvanced && (
           <div className="mt-4 space-y-4">
             <MiniSlider
-              label="Index Rate"
+              label="Index-Rate"
               value={voice.indexRate}
               min={0}
               max={1}
@@ -207,7 +207,7 @@ export default function VoiceLab({ voice, onChange, hasModel, isRunning, compact
               onChange={(value) => onChange({ rmsMixRate: value })}
             />
             <MiniSlider
-              label="Protect"
+              label="Schutz"
               value={voice.protect}
               min={0}
               max={0.5}
@@ -215,8 +215,8 @@ export default function VoiceLab({ voice, onChange, hasModel, isRunning, compact
               onChange={(value) => onChange({ protect: value })}
             />
             <p className="text-[11px] leading-4 text-[color:var(--muted)]">
-              Index rate blends retrieval features, RMS mix follows input loudness,
-              protect preserves breaths and consonants.
+              Index-Rate mischt abgerufene Merkmale bei, RMS-Mix folgt der Eingangslautstärke,
+              Schutz erhält Atmen und Konsonanten.
             </p>
           </div>
         )}

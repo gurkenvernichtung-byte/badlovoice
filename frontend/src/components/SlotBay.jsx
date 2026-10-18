@@ -14,7 +14,7 @@ export default function SlotBay({ activeModel, onActiveModelChange, modelsRefres
       setModels(modelList || []);
       setError(null);
     } catch (err) {
-      setError(err.message || 'Could not load slots');
+      setError(err.message || 'Slots konnten nicht geladen werden');
     }
   }, []);
 
@@ -49,11 +49,11 @@ export default function SlotBay({ activeModel, onActiveModelChange, modelsRefres
 
   return (
     <section className="panel p-4">
-      <p className="panel-kicker">Quick slots</p>
-      <h2 className="panel-title">Model slots</h2>
+      <p className="panel-kicker">Schnell-Slots</p>
+      <h2 className="panel-title">Modell-Slots</h2>
       <p className="mt-1 text-sm text-[color:var(--muted)]">
-        Optional shortcuts: bind up to five voice files here for one-click swap.
-        (Inspired by w-okada voice-changer — you can ignore this and use the list below.)
+        Optionale Kurzwahl: bis zu fünf Stimmdateien hier zuordnen für den Wechsel mit einem Klick.
+        (Inspiriert von w-okada voice-changer — du kannst das ignorieren und die Liste unten nutzen.)
       </p>
 
       <div className="mt-4 grid gap-2 sm:grid-cols-5">
@@ -80,7 +80,7 @@ export default function SlotBay({ activeModel, onActiveModelChange, modelsRefres
               disabled={busy != null}
               onChange={(e) => onBind(slot.index, e.target.value)}
             >
-              <option value="">Empty</option>
+              <option value="">Leer</option>
               {models.map((m) => (
                 <option key={m.name} value={m.name}>
                   {m.name}
@@ -93,7 +93,7 @@ export default function SlotBay({ activeModel, onActiveModelChange, modelsRefres
               disabled={!slot.name || busy != null}
               onClick={() => onActivate(slot.index)}
             >
-              Load
+              Laden
             </button>
           </div>
         ))}

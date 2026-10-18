@@ -10,7 +10,7 @@ export default function useAudioDevices() {
 
   const enumerate = useCallback(async () => {
     if (!navigator.mediaDevices?.enumerateDevices) {
-      setError('This browser does not support media device enumeration.');
+      setError('Dieser Browser unterstützt das Auflisten von Medien-Geräten nicht.');
       setInputDevices([]);
       setOutputDevices([]);
       setHasLabels(false);
@@ -35,7 +35,7 @@ export default function useAudioDevices() {
   // then enumerate. Only call this on user action (e.g. clicking Start).
   const refresh = useCallback(async () => {
     if (!navigator.mediaDevices?.getUserMedia) {
-      setError('This browser does not support microphone access.');
+      setError('Dieser Browser unterstützt keinen Mikrofonzugriff.');
       return;
     }
 
@@ -48,7 +48,7 @@ export default function useAudioDevices() {
       } catch (err) {
         if (err?.name === 'NotAllowedError') {
           setPermissionState('denied');
-          setError('Microphone permission is required to reveal device names.');
+          setError('Mikrofonzugriff ist nötig, um Gerätenamen anzuzeigen.');
         } else {
           setError(err.message || 'Failed to access the microphone.');
         }

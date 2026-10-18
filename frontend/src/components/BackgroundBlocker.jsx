@@ -19,11 +19,11 @@ export default function BackgroundBlocker({
     <section className="panel border-[#c4783a]/35 p-5">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <p className="panel-kicker">Step 1 · Clean input</p>
-          <h2 className="panel-title">Block background voice</h2>
+          <p className="panel-kicker">Schritt 1 · Eingang säubern</p>
+          <h2 className="panel-title">Hintergrundstimmen blockieren</h2>
           <p className="mt-1 max-w-xl text-sm text-[color:var(--muted)]">
-            Mutes the mic when you stop talking. Cuts room noise and other people in the background
-            before pitch / FX run.
+            Stummt das Mikrofon, wenn du nicht sprichst. Entfernt Raumgeräusche und andere Stimmen im Hintergrund,
+            bevor Tonhöhe und Effekte laufen.
           </p>
         </div>
         <button
@@ -36,17 +36,17 @@ export default function BackgroundBlocker({
               : 'border border-[color:var(--line)] bg-[color:var(--surface)] text-[color:var(--muted)]'
           }`}
         >
-          {enabled ? 'Blocking on' : 'Blocking off'}
+          {enabled ? 'Blockierung an' : 'Blockierung aus'}
         </button>
       </div>
 
       <div className={`mt-4 ${enabled ? '' : 'opacity-40'}`}>
         <div className="flex items-center justify-between gap-2">
           <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[color:var(--muted)]">
-            Sensitivity
+            Empfindlichkeit
           </span>
           <span className="font-mono text-xs text-[#6ee7b7]">
-            {thresholdDb} dB · {enabled ? (gateOpen ? 'OPEN — your voice' : 'CLOSED — background muted') : 'bypassed'}
+            {thresholdDb} dB · {enabled ? (gateOpen ? 'OFFEN — deine Stimme' : 'GESCHLOSSEN — Hintergrund stumm') : 'umgangen'}
           </span>
         </div>
         <input
@@ -60,8 +60,8 @@ export default function BackgroundBlocker({
           className="mt-2 w-full"
         />
         <div className="mt-1 flex justify-between text-[10px] text-[color:var(--muted)]">
-          <span>More blocking</span>
-          <span>Easier open</span>
+          <span>Mehr Blockierung</span>
+          <span>Leichter öffnen</span>
         </div>
 
         <div className="relative mt-4 h-3 overflow-hidden rounded-sm bg-[color:var(--surface-2)]">
@@ -72,12 +72,12 @@ export default function BackgroundBlocker({
           <div
             className="absolute inset-y-0 w-0.5 bg-[#c4783a]"
             style={{ left: `${threshPct}%` }}
-            title="Gate threshold"
+            title="Gate-Schwelle"
           />
         </div>
         <p className="mt-2 text-xs text-[color:var(--muted)]">
-          Copper line = threshold. Status must say OPEN while you talk. If it stays CLOSED on your
-          voice, drag toward Easier open (right). Only tighten if background still leaks.
+          Kupferne Linie = Schwelle. Der Status muss beim Sprechen OFFEN zeigen. Bleibt er bei deiner Stimme
+          GESCHLOSSEN, nach rechts (Leichter öffnen) ziehen. Nur verschärfen, wenn Hintergrund noch durchkommt.
         </p>
       </div>
     </section>

@@ -111,24 +111,24 @@ export default function Visualizer({ getAnalysers, isRunning, hero = false }) {
     <section className="panel relative overflow-hidden p-5">
       <div className="flex items-center justify-between">
         <div>
-          <p className="panel-kicker">Spectrum</p>
-          <h2 className="panel-title">Live signal</h2>
+          <p className="panel-kicker">Spektrum</p>
+          <h2 className="panel-title">Live-Signal</h2>
         </div>
         <div className="flex items-center gap-4 text-[10px] font-semibold uppercase tracking-[0.14em] text-[color:var(--muted)]">
           <span className="flex items-center gap-1.5">
             <span className="inline-block h-2 w-2 bg-[color:var(--mic)]/60" />
-            Input
+            Eingang
           </span>
           <span className="flex items-center gap-1.5">
             <span className="inline-block h-2 w-2 bg-[color:var(--accent)]/80" />
-            Output
+            Ausgang
           </span>
         </div>
       </div>
       <canvas ref={canvasRef} className="mt-4 h-44 w-full sm:h-52" />
       {!isRunning && (
         <p className="pointer-events-none absolute inset-x-0 bottom-[38%] text-center text-xs font-medium text-[color:var(--muted)]">
-          Start to see the live spectrum
+          Starten, um das Live-Spektrum zu sehen
         </p>
       )}
     </section>

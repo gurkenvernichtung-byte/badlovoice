@@ -303,13 +303,13 @@ export default function useAudioPipeline(wsHook) {
         console.error('Failed to start audio pipeline:', err);
         stop();
         if (err.name === 'NotAllowedError') {
-          throw new Error('Microphone permission denied. Allow mic access and try again.');
+          throw new Error('Mikrofonzugriff verweigert. Mikrofon erlauben und erneut versuchen.');
         }
         if (err.name === 'NotFoundError') {
-          throw new Error('No microphone found.');
+          throw new Error('Kein Mikrofon gefunden.');
         }
         if (err.name === 'NotReadableError') {
-          throw new Error('Microphone is in use by another app.');
+          throw new Error('Mikrofon wird gerade von einer anderen App genutzt.');
         }
         throw err;
       }
@@ -352,7 +352,7 @@ export default function useAudioPipeline(wsHook) {
 
   const startRecording = useCallback(() => {
     if (!isRunning && !audioContextRef.current) {
-      throw new Error('Start the voice changer first, then press Record.');
+      throw new Error('Zuerst den Stimmwandler starten, dann Aufnehmen drücken.');
     }
     if (recordingRef.current) return;
     recordChunksRef.current = [];

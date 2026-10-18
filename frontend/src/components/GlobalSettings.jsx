@@ -54,10 +54,10 @@ export default function GlobalSettings({ config, onChange, disabled, onClose }) 
   );
   const onnxSelectedProviders = config.runtime?.onnx?.selectedProviders || [];
   const onnxProviders = config.runtime?.onnx?.availableProviders || [];
-  const onnxProvider = config.runtime?.onnx?.activeProvider || (config.runtime?.onnx?.available ? 'CPUExecutionProvider' : 'Unavailable');
-  const torchDevice = config.runtime?.torch?.device || 'unavailable';
-  const gpuName = config.runtime?.torch?.gpuName || (torchDevice === 'cpu' ? 'CPU only' : 'Not detected');
-  const cudaVersion = config.runtime?.torch?.cudaVersion || 'Not detected';
+  const onnxProvider = config.runtime?.onnx?.activeProvider || (config.runtime?.onnx?.available ? 'CPUExecutionProvider' : 'Nicht verfügbar');
+  const torchDevice = config.runtime?.torch?.device || 'nicht verfügbar';
+  const gpuName = config.runtime?.torch?.gpuName || (torchDevice === 'cpu' ? 'nur CPU' : 'Nicht erkannt');
+  const cudaVersion = config.runtime?.torch?.cudaVersion || 'Nicht erkannt';
   const onnxGpuReady = Boolean(config.runtime?.onnx?.gpuEnabled);
   const torchGpuReady = Boolean(config.runtime?.torch?.cudaAvailable);
 
@@ -66,13 +66,13 @@ export default function GlobalSettings({ config, onChange, disabled, onClose }) 
       <div className="flex flex-col gap-4 border-b border-[color:var(--line)] pb-5 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
           <p className="text-[10px] font-semibold uppercase tracking-[0.34em] text-[color:var(--muted)]">
-            Global Settings
+            Globale Einstellungen
           </p>
           <h2 className="mt-2 text-xl font-semibold tracking-[-0.04em] text-[color:var(--ink-text)]">
-            Session runtime
+            Sitzungs-Laufzeit
           </h2>
           <p className="mt-2 max-w-2xl text-sm text-[color:var(--muted)]">
-            Keep stream defaults and hardware runtime details in one place.
+            Stream-Standards und Hardware-Laufzeitdetails an einem Ort.
           </p>
         </div>
 
@@ -80,7 +80,7 @@ export default function GlobalSettings({ config, onChange, disabled, onClose }) 
           <button
             onClick={onClose}
             className="inline-flex h-10 w-10 items-center justify-center rounded-md border border-[color:var(--line)] bg-[color:var(--surface)] text-[color:var(--muted)] transition hover:border-[color:var(--ink-text)]/25 hover:bg-[color:var(--surface)] hover:text-[color:var(--ink-text)]"
-            aria-label="Close settings"
+            aria-label="Einstellungen schließen"
           >
             <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M18 6 6 18" />
@@ -94,17 +94,17 @@ export default function GlobalSettings({ config, onChange, disabled, onClose }) 
         <div className="rounded-md border border-[color:var(--line)] bg-[color:var(--surface-2)]/60 p-5">
           <div className="flex flex-col gap-2 border-b border-[color:var(--line)] pb-4">
             <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[color:var(--muted)]">
-              Stream Defaults
+              Stream-Standards
             </p>
             <p className="text-sm text-[color:var(--muted)]">
-              Applied to the next routing session. Stop routing before changing these values.
+              Gilt für die nächste Routing-Sitzung. Vor dem Ändern dieser Werte das Routing stoppen.
             </p>
           </div>
 
           <div className="mt-5 grid gap-5 sm:grid-cols-2">
             <div>
               <label className="block text-xs font-medium uppercase tracking-[0.2em] text-[color:var(--muted)]">
-                Sample Rate
+                Abtastrate
               </label>
               <select
                 value={config.sampleRate}
@@ -122,7 +122,7 @@ export default function GlobalSettings({ config, onChange, disabled, onClose }) 
 
             <div>
               <label className="block text-xs font-medium uppercase tracking-[0.2em] text-[color:var(--muted)]">
-                Chunk Size
+                Chunk-Größe
               </label>
               <select
                 value={config.chunkSize}
@@ -132,7 +132,7 @@ export default function GlobalSettings({ config, onChange, disabled, onClose }) 
               >
                 {chunkSizeOptions.map((value) => (
                   <option key={value} value={value}>
-                    {value.toLocaleString()} samples
+                    {value.toLocaleString()} Samples
                   </option>
                 ))}
               </select>
@@ -141,8 +141,8 @@ export default function GlobalSettings({ config, onChange, disabled, onClose }) 
 
           <p className="mt-5 text-xs uppercase tracking-[0.18em] text-[color:var(--muted)]">
             {disabled
-              ? 'Routing is active. Stop the stream to edit global defaults.'
-              : 'Saved locally and synced to the server before the next stream starts.'}
+              ? 'Routing läuft. Stream stoppen, um die Standards zu ändern.'
+              : 'Lokal gespeichert und vor dem nächsten Stream an den Server übertragen.'}
           </p>
         </div>
 
@@ -150,10 +150,10 @@ export default function GlobalSettings({ config, onChange, disabled, onClose }) 
           <div className="flex flex-col gap-4 border-b border-[color:var(--line)] pb-4">
             <div>
               <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[color:var(--muted)]">
-                Hardware Runtime
+                Hardware-Laufzeit
               </p>
               <p className="mt-2 text-sm text-[color:var(--muted)]">
-                What the backend currently sees for ONNX, PyTorch, GPU, and CUDA.
+                Was das Backend aktuell von ONNX, PyTorch, GPU und CUDA erkennt.
               </p>
             </div>
 
@@ -165,30 +165,30 @@ export default function GlobalSettings({ config, onChange, disabled, onClose }) 
 
           <div className="mt-5 grid gap-3 sm:grid-cols-2">
             <RuntimeItem
-              label="ONNX Provider"
+              label="ONNX-Provider"
               value={onnxProvider}
               detail={
                 onnxSelectedProviders.length > 0
-                  ? `Selected: ${onnxSelectedProviders.join(', ')}. Available: ${onnxProviders.join(', ')}`
+                  ? `Gewählt: ${onnxSelectedProviders.join(', ')}. Verfügbar: ${onnxProviders.join(', ')}`
                   : onnxProviders.length > 0
-                    ? `Available: ${onnxProviders.join(', ')}`
-                    : 'No providers detected'
+                    ? `Verfügbar: ${onnxProviders.join(', ')}`
+                    : 'Keine Provider erkannt'
               }
             />
             <RuntimeItem
-              label="PyTorch Device"
+              label="PyTorch-Gerät"
               value={torchDevice}
-              detail={torchGpuReady ? 'CUDA acceleration is available to PyTorch.' : 'PyTorch is running without CUDA acceleration.'}
+              detail={torchGpuReady ? 'CUDA-Beschleunigung ist für PyTorch verfügbar.' : 'PyTorch läuft ohne CUDA-Beschleunigung.'}
             />
             <RuntimeItem
               label="GPU"
               value={gpuName}
-              detail={onnxGpuReady ? 'ONNX Runtime can use CUDAExecutionProvider.' : 'ONNX Runtime is currently on CPU provider only.'}
+              detail={onnxGpuReady ? 'ONNX Runtime kann CUDAExecutionProvider nutzen.' : 'ONNX Runtime läuft aktuell nur über den CPU-Provider.'}
             />
             <RuntimeItem
               label="CUDA"
               value={cudaVersion}
-              detail={config.runtime?.torch?.cudaAvailable ? 'Reported by torch.version.cuda.' : 'CUDA was not reported by the current PyTorch runtime.'}
+              detail={config.runtime?.torch?.cudaAvailable ? 'Gemeldet von torch.version.cuda.' : 'CUDA wurde von der aktuellen PyTorch-Laufzeit nicht gemeldet.'}
             />
           </div>
         </div>
