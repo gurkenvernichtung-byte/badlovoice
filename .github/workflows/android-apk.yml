@@ -1,9 +1,12 @@
 
+
 name: Build BadloVoice Android APK
 
 on:
   workflow_dispatch:
   push:
+    branches:
+      - master
     paths:
       - "frontend/**"
       - ".github/workflows/android-apk.yml"
@@ -13,7 +16,10 @@ permissions:
 
 jobs:
   build:
+    name: Build debug APK
     runs-on: ubuntu-latest
+    timeout-minutes: 30
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -21,7 +27,9 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
 
       - name: Set up Java
         uses: actions/setup-java@v4
@@ -30,25 +38,30 @@ jobs:
           java-version: "21"
 
       - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
+        uses: android-actions/setup-android@v4
+        with:
+          packages: |
+            platform-tools
+            platforms;android-35
+            build-tools;35.0.0
 
       - name: Install frontend dependencies
         working-directory: frontend
         run: npm install
 
-      - name: Build web assets
+      - name: Build and sync Android app
         working-directory: frontend
-        run: npm run build
+        run: npm run mobile:sync
 
-      - name: Sync Android project
-        working-directory: frontend
-        run: npx cap sync android
+      - name: Check Android project
+        working-directory: frontend/android
+        run: |
+          test -f gradlew
+          chmod +x gradlew
 
       - name: Build debug APK
         working-directory: frontend/android
-        run: |
-          chmod +x gradlew
-          ./gradlew assembleDebug
+        run: ./gradlew assembleDebug --no-daemon
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
@@ -56,3 +69,5 @@ jobs:
           name: badlovoice-debug-apk
           path: frontend/android/app/build/outputs/apk/debug/*.apk
           if-no-files-found: error
+          retention-days: 7
+
