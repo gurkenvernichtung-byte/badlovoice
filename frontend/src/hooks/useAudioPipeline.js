@@ -44,23 +44,23 @@ export default function useAudioPipeline(wsHook) {
   const applyOutputGains = useCallback(() => {
     const ctx = audioContextRef.current;
     const now = ctx?.currentTime ?? 0;
-    const hear = hearMyselfRef.current;
+    // The converted voice is always the output (speaker + recording).
+    // Pitch mode: local pitch monitor is the output. RVC mode: server voice is the output.
+    // The old "hear myself" switch is gone, so it no longer silences anything.
     const rvc = listenModeRef.current === 'rvc' || listenModeRef.current === 'server';
 
     if (monitorGainRef.current) {
       monitorGainRef.current.gain.cancelScheduledValues(now);
-      const localLevel = !hear ? 0 : rvc ? 0.12 : 1.0;
-      monitorGainRef.current.gain.setValueAtTime(localLevel, now);
+      monitorGainRef.current.gain.setValueAtTime(rvc ? 0 : 1.0, now);
     }
     if (playbackGainRef.current) {
       playbackGainRef.current.gain.cancelScheduledValues(now);
-      const playLevel = !hear ? 0 : rvc ? 1.8 : 1.0;
-      playbackGainRef.current.gain.setValueAtTime(playLevel, now);
+      playbackGainRef.current.gain.setValueAtTime(rvc ? 1.8 : 0, now);
     }
     if (monitorNodeRef.current) {
       monitorNodeRef.current.port.postMessage({
         ...monitorParamsRef.current,
-        enabled: hear && !rvc,
+        enabled: !rvc,
         pitch: rvc ? 0 : monitorParamsRef.current.pitch,
       });
     }
