@@ -1,25 +1,30 @@
 /**
  * Keeps the voice changer alive while the app is in the background.
- * Native side: BackgroundAudioService (foreground service, type microphone).
- * In the browser the plugin does not exist, so these calls do nothing.
+ * Native side (Android APK only): window.BadloNative, provided by MainActivity,
+ * which starts/stops BackgroundAudioService (foreground service, type microphone).
+ * In the browser the object does not exist, so these calls do nothing.
  */
 
-function plugin() {
+function native() {
   try {
-    return window.Capacitor?.Plugins?.BackgroundAudio ?? null;
+    return window.BadloNative ?? null;
   } catch {
     return null;
   }
 }
 
 export function startBackgroundAudio() {
-  const p = plugin();
-  if (!p?.start) return;
-  p.start().catch((err) => console.warn('Background audio not started:', err));
+  try {
+    native()?.startBackgroundAudio?.();
+  } catch (err) {
+    console.warn('Background audio not started:', err);
+  }
 }
 
 export function stopBackgroundAudio() {
-  const p = plugin();
-  if (!p?.stop) return;
-  p.stop().catch(() => {});
+  try {
+    native()?.stopBackgroundAudio?.();
+  } catch {
+    // ignore
+  }
 }
